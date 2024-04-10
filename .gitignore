@@ -25,3 +25,12 @@ logs
 
 # prisma
 prisma/migrations/*
+
+# Files
+public/fonts/*
+public/uploads/*
+public/js/*
+public/css/*
+public/images/*
+!public/images/icons
+!public/images/banners
