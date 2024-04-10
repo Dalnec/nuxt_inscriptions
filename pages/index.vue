@@ -1,6 +1,6 @@
+<script setup lang="ts"></script>
 <template>
-  <div>
+  <div class="bg-black">
     <MainCarousel />
-    <p>asdkfjñalksjdñflkajñsldkjfañlksjdñfalksjdñflkajsñdlkfjañlksdjfñalkjsdñlkfj</p>
   </div>
 </template>

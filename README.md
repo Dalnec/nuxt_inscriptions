@@ -73,3 +73,27 @@ bun run preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+
+````
+
+Prisma Generate Migration
+
+```bash
+npx prisma migrate dev --name init
+
+
+````
+
+Prisma Seeding
+
+```bash
+npx prisma db seed
+```
+
+````
+
+Prisma Reset migrations
+
+```bash
+prisma migrate reset --force --preview-feature
+````

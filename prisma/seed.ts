@@ -2,11 +2,13 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 const paymentmethod_data = [
-  { description: "Efectivo" },
-  { description: "Tarjeta" },
-  { description: "Transferencia" },
-  { description: "Yape" },
-  { description: "Plin" },
+  { description: "EFECTIVO" },
+  { description: "BCP", account: "43505016976070", icon: "/images/icons/logo_bcp.ico" },
+  { description: "BBVA", account: "0011-0814-0216399183", icon: "/images/icons/logo_bbva.ico" },
+  { description: "PIURA", account: "210-01-072684", icon: "/images/icons/logo_yape.ico" },
+  { description: "INTERBANK", account: "8983322363216", icon: "/images/icons/logo_yape.ico" },
+  { description: "YAPE", account: "935018772", icon: "/images/icons/logo_yape.ico" },
+  { description: "PLIN", account: "935018772", icon: "/images/icons/logo_plin.ico" },
 ];
 const documenttype_data = [
   { id: "0", description: "SIN DOCUMENTO", active: true },

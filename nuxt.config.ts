@@ -1,7 +1,15 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { resolve } from "path";
 export default defineNuxtConfig({
-  modules: ["@nuxtjs/tailwindcss", "shadcn-nuxt", "@nuxt/image"],
+  modules: [
+    "@nuxtjs/tailwindcss",
+    "shadcn-nuxt",
+    "@nuxt/image",
+    "nuxt-icon",
+    "@vee-validate/nuxt",
+    "@nuxtjs/supabase",
+    "@vueuse/nuxt",
+  ],
   shadcn: {
     /**
      * Prefix for all the imported component
@@ -17,19 +25,14 @@ export default defineNuxtConfig({
   alias: {
     "@": resolve(__dirname, "./"),
   },
+  supabase: {
+    redirect: false,
+  },
+  redirectOptions: {
+    login: "/login",
+    // callback: '/confirm',
+    include: undefined,
+    exclude: ["/login", "/register", "/index", "/"],
+    cookieRedirect: false,
+  },
 });
-
-// export default defineNuxtConfig({
-//   modules: ['@nuxtjs/tailwindcss', 'shadcn-nuxt'],
-//   shadcn: {
-//     /**
-//      * Prefix for all the imported component
-//      */
-//     prefix: '',
-//     /**
-//      * Directory that the component lives in.
-//      * @default "./components/ui"
-//      */
-//     componentDir: './components/ui'
-//   }
-// })

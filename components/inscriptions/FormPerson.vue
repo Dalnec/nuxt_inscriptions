@@ -1,0 +1,412 @@
+<script setup lang="ts">
+import { h } from "vue";
+import { useForm } from "vee-validate";
+import { toTypedSchema } from "@vee-validate/zod";
+import * as z from "zod";
+import { format, parseISO } from "date-fns";
+
+import { Button } from "@/components/ui/button";
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { toast } from "@/components/ui/toast";
+
+const { props = {} } = defineProps(["props"]);
+const phoneRegex = new RegExp(/^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/);
+const dniRegex = new RegExp(/^([\s0-9])+$/);
+
+const listforms = useListForms();
+const editDataForm = useForms();
+const editing = ref(false);
+const documentTypes = ref([]);
+const documentLabel = ref("DNI");
+
+const changeDocumentLabel = (selected: string) => {
+  documentLabel.value = documentTypes.value.find((d) => d.id == +selected)?.description || "DNI";
+};
+
+const defaultformdata = ref({
+  documenttype_id: "1",
+  doc_num: "",
+  names: "",
+  lastnames: "",
+  church: "",
+  birthday: "",
+  phone: "",
+  gender: "",
+  type_person: "",
+});
+const formdata = ref({ ...defaultformdata.value });
+const loadingdni = ref(false);
+const cardPersonalData = ref(false);
+const formPersonalData = ref(false);
+
+watch(editDataForm, (editForm: any) => {
+  if (editForm) {
+    editing.value = true;
+    formdata.value = { ...editForm };
+    cardPersonalData.value = true;
+    form.resetForm({ values: { ...formdata.value } });
+    formPersonalData.value = false;
+  }
+});
+
+onMounted(() => {
+  documentTypes.value = props.documentTypes;
+});
+
+// const documentTypes = ref([]);
+
+const formSchema = toTypedSchema(
+  z.object({
+    doc_num: z
+      .string({ required_error: "DNI es requerido", invalid_type_error: "Debe ser un numero de 8 digitos" })
+      .regex(dniRegex, "DNI invalido")
+      .min(8, {
+        message: "Debe ingresar 8 digitos",
+      })
+      .max(10, {
+        message: "Debe ingresar menos de 10 digitos no DNIs",
+      }),
+    names: z
+      .string({ required_error: "Campo requerido" })
+      .min(2, {
+        message: "Debe ingresar mas de 2 caracteres",
+      })
+      .max(30, {
+        message: "No puede superar los 30 caracteres.",
+      }),
+    lastnames: z
+      .string({ required_error: "Campo requerido" })
+      .min(2, {
+        message: "Debe ingresar mas de 2 caracteres",
+      })
+      .max(30, {
+        message: "No puede superar los 30 caracteres.",
+      }),
+    gender: z.string({ required_error: "Campo requerido" }),
+    birthday: z.string({ required_error: "Campo requerido" }),
+    phone: z.string().regex(phoneRegex, "Numero de Celular invalido").max(9, {
+      message: "No puede superar los 9 caracteres.",
+    }),
+    type_person: z.string({ required_error: "Campo requerido" }).min(1, {
+      message: "Seleccione una opción",
+    }),
+    // church: z.string({ required_error: "Campo requerido" }).min(1, {
+    //   message: "Seleccione una opción",
+    // }),
+  })
+);
+
+const form = useForm({
+  validationSchema: formSchema,
+  initialValues: { ...formdata.value },
+});
+
+const clearForm = () => {
+  editing.value = false;
+  cardPersonalData.value = false;
+  formPersonalData.value = false;
+  formdata.value = { ...defaultformdata.value };
+  form.resetForm({ values: { ...formdata.value } });
+};
+
+const getPersonDni = async (dni: string) => {
+  loadingdni.value = true;
+  const token = "ba019259a25321333dd5d806678f88d5514a7c2b6c11515481617759d873249b";
+  // const token = "bc019259a25321333dd5d806678f88d5514a7c3b6c91215481607759d873249a";
+  const data = await $fetch(`https://my.apidev.pro/api/dni/${dni}`, {
+    // const data = await $fetch(`https://apiperu.dev/api/dni/${dni}`, {
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+  });
+  console.log("person", data);
+  if (data.success) {
+    formdata.value.names = data.data.nombres;
+    formdata.value.lastnames = `${data.data.apellido_paterno} ${data.data.apellido_materno}`;
+    formdata.value.birthday = data.data.fecha_nacimiento;
+    formdata.value.gender = data.data.sexo == "MASCULINO" ? "M" : "F";
+    form.resetForm({ values: { ...formdata.value } });
+    cardPersonalData.value = true;
+    formPersonalData.value = false;
+    loadingdni.value = false;
+  } else {
+    clearForm();
+    toast({
+      title: "DNI no encontrado :(",
+      description: "Verifique el DNI ingresado",
+      class: "bg-red-500 text-white font-bold py-3",
+      duration: 3000,
+    });
+  }
+  loadingdni.value = false;
+};
+
+const onSubmit = form.handleSubmit(async () => {
+  let person: any = listforms.value.find((item) => item.doc_num == formdata.value.doc_num);
+  if (person) {
+    if (editing.value) {
+      // person = { ...person, ...formdata.value };
+      person.doc_num = formdata.value.doc_num;
+      person.names = formdata.value.names;
+      person.lastnames = formdata.value.lastnames;
+      person.church = formdata.value.church;
+      person.birthday = formdata.value.birthday;
+      person.phone = formdata.value.phone;
+      person.gender = formdata.value.gender;
+      person.type_person = formdata.value.type_person;
+      person.mode = "list";
+      console.log(person);
+      clearForm();
+      toast({
+        title: "INSCRIPCIÓN EDITADA",
+        description: "Cambios realizados con exito",
+        class: "bg-green-600 text-white py-3",
+        duration: 3000,
+      });
+    } else {
+      toast({
+        title: "** Verifique el DNI ingresado! **",
+        description: "Una persona ya se encuentra registrada con este DNI.",
+        class: "bg-red-500 text-white font-bold py-3",
+        duration: 3000,
+      });
+    }
+  } else {
+    setTimeout(() => {
+      listforms.value.push({ ...formdata.value, mode: "list" });
+      clearForm();
+    }, 300);
+
+    toast({
+      title: "INSCRIPCIÓN AÑADIDA",
+      description: "Se añadio la inscripción con exito",
+      class: "bg-green-600 text-white py-3",
+      duration: 3000,
+    });
+  }
+});
+</script>
+
+<template>
+  <form class="space-y-3">
+    <FormField v-slot="{ componentField }" name="documenttype_id">
+      <FormItem>
+        <FormLabel>TIPO DOCUMENTO</FormLabel>
+        <Select
+          v-bind="componentField"
+          v-model="formdata.documenttype_id"
+          @update:model-value="changeDocumentLabel(formdata.documenttype_id)"
+        >
+          <FormControl>
+            <SelectTrigger>
+              <SelectValue placeholder="Tipo de Documento de Identidad" />
+            </SelectTrigger>
+          </FormControl>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem v-for="item in documentTypes" :key="item.id" :value="item.id">
+                {{ item.description }}
+              </SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        <FormMessage />
+      </FormItem>
+    </FormField>
+
+    <FormField v-slot="{ componentField }" name="doc_num">
+      <FormItem>
+        <FormLabel>{{ documentLabel }}</FormLabel>
+        <FormControl>
+          <div class="flex w-full gap-1.5">
+            <Input
+              type="text"
+              :placeholder="`Ingrese Numero de ${documentLabel}`"
+              v-bind="componentField"
+              v-model="formdata.doc_num"
+              autocomplete="off"
+            />
+            <Button
+              v-if="formdata.documenttype_id == '1'"
+              variant="secondary"
+              @click.prevent="getPersonDni(formdata.doc_num)"
+              :disabled="loadingdni || formdata.doc_num.length < 8"
+            >
+              <Icon name="material-symbols:person-search" class="ms-auto h-5 w-5 opacity-80 mr-2" />
+              {{ loadingdni ? "..." : "DNI" }}
+            </Button>
+          </div>
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    </FormField>
+
+    <InscriptionsInfoPersonCard
+      v-show="cardPersonalData"
+      :props="{
+        item: formdata,
+        edit: () => {
+          cardPersonalData = false;
+          formPersonalData = true;
+        },
+      }"
+    />
+
+    <div v-show="formPersonalData" class="space-y-5">
+      <FormField v-slot="{ componentField }" name="names">
+        <FormItem>
+          <FormLabel>NOMBRES</FormLabel>
+          <FormControl>
+            <Input
+              type="text"
+              placeholder="Nombres"
+              v-bind="componentField"
+              v-model="formdata.names"
+              autocomplete="off"
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+
+      <FormField v-slot="{ componentField }" name="lastnames">
+        <FormItem>
+          <FormLabel>APELLIDOS</FormLabel>
+          <FormControl>
+            <Input
+              type="text"
+              placeholder="Apellidos"
+              v-bind="componentField"
+              v-model="formdata.lastnames"
+              autocomplete="off"
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+
+      <FormField v-slot="{ componentField }" name="gender">
+        <FormItem>
+          <FormLabel>GÉNERO</FormLabel>
+          <FormControl>
+            <RadioGroup class="flex flex-col space-y-1" v-bind="componentField" v-model="formdata.gender">
+              <FormItem class="flex items-center space-y-0 gap-x-3">
+                <FormControl>
+                  <RadioGroupItem value="M" />
+                </FormControl>
+                <FormLabel class="font-normal"> Maculino </FormLabel>
+              </FormItem>
+              <FormItem class="flex items-center space-y-0 gap-x-3">
+                <FormControl>
+                  <RadioGroupItem value="F" />
+                </FormControl>
+                <FormLabel class="font-normal"> Femenino </FormLabel>
+              </FormItem>
+            </RadioGroup>
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+
+      <FormField v-slot="{ componentField }" name="birthday">
+        <FormItem class="flex flex-col">
+          <FormLabel>FECHA DE NACIMIENTO</FormLabel>
+          <Popover>
+            <PopoverTrigger as-child>
+              <FormControl>
+                <Button variant="outline">
+                  <span>
+                    {{ formdata.birthday ? format(parseISO(formdata.birthday), "dd-MM-yyyy") : "Seleccione una fecha" }}
+                  </span>
+                  <Icon name="ion:calendar-outline" class="ms-auto h-5 w-5 opacity-80 mr-2" />
+                </Button>
+              </FormControl>
+            </PopoverTrigger>
+            <PopoverContent class="p-0">
+              <Calendar v-bind="componentField" v-model="formdata.birthday" />
+            </PopoverContent>
+          </Popover>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+    </div>
+
+    <FormField v-slot="{ componentField }" name="phone">
+      <FormItem>
+        <FormLabel>CELULAR</FormLabel>
+        <FormControl>
+          <Input
+            type="text"
+            placeholder="Numero de Celular"
+            v-bind="componentField"
+            v-model="formdata.phone"
+            autocomplete="off"
+          />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    </FormField>
+
+    <FormField v-slot="{ componentField }" name="type_person">
+      <FormItem>
+        <FormLabel>PERTENECES A UNA IGLESIA?</FormLabel>
+        <FormControl>
+          <RadioGroup class="flex flex-col space-y-1" v-bind="componentField" v-model="formdata.type_person">
+            <FormItem class="flex items-center space-y-0 gap-x-3">
+              <FormControl>
+                <RadioGroupItem value="P" />
+              </FormControl>
+              <FormLabel class="font-normal"> Pastor </FormLabel>
+            </FormItem>
+            <FormItem class="flex items-center space-y-0 gap-x-3">
+              <FormControl>
+                <RadioGroupItem value="M" />
+              </FormControl>
+              <FormLabel class="font-normal"> Miembro Activo </FormLabel>
+            </FormItem>
+            <FormItem class="flex items-center space-y-0 gap-x-3">
+              <FormControl>
+                <RadioGroupItem value="I" />
+              </FormControl>
+              <FormLabel class="font-normal"> Invitado </FormLabel>
+            </FormItem>
+          </RadioGroup>
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    </FormField>
+
+    <FormField v-slot="{ componentField }" name="church">
+      <FormItem>
+        <FormLabel>IGLESIA</FormLabel>
+        <FormControl>
+          <Input
+            type="text"
+            placeholder="Iglesia"
+            v-bind="componentField"
+            v-model="formdata.church"
+            autocomplete="off"
+          />
+        </FormControl>
+        <FormDescription> Si es el caso. Ingresa nombre de la iglesia donde congregas </FormDescription>
+        <FormMessage />
+      </FormItem>
+    </FormField>
+    <div class="flex justify-between">
+      <Button
+        variant="outline"
+        class="border-2 text-red-500 border-red-500/100 hover:bg-red-500 hover:text-white"
+        @click.prevent="clearForm"
+      >
+        Cancel
+      </Button>
+
+      <Button
+        class="bg-violet-600 hover:bg-violet-700 text-white shadow-xl shadow-violet-600/60 font-bold py-2 px-4 rounded shadow-md hover:shadow-md duration-500 3ransition ease-out scale-100 hover:scale-110"
+        @click.prevent="onSubmit"
+      >
+        Agregar!
+      </Button>
+    </div>
+    <!-- {{ formdata }} -->
+  </form>
+</template>

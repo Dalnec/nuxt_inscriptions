@@ -8,10 +8,12 @@ datasource db {
 }
 
 model PaymentMethod {
-  id          Int       @id @default(autoincrement())
-  description String    @unique @db.VarChar(255)
-  active      Boolean   @default(true)
-  vouchers    Voucher[]
+  id          Int           @id @default(autoincrement())
+  description String        @unique @db.VarChar(50)
+  account     String?       @db.VarChar(50)
+  icon        String?       @db.VarChar(100)
+  active      Boolean       @default(true)
+  Inscription Inscription[]
 
   @@map("paymentmethod")
 }
@@ -25,55 +27,60 @@ model DocumentType {
   @@map("documenttype")
 }
 
+enum TypePerson {
+  PASTOR        @map("P")
+  MIEMBROACTIVO @map("M")
+  INVITADO      @map("I")
+}
+
 model Person {
-  id              Int               @id @default(autoincrement())
-  created         DateTime          @default(now())
-  modified        DateTime          @updatedAt
-  code            String?           @db.VarChar(20)
-  doc_num         String            @unique @db.VarChar(15)
-  firstname       String            @db.VarChar(100)
-  lastname        String            @db.VarChar(100)
-  gender          String?           @db.VarChar(1)
-  birthday        DateTime?         @db.Date
-  phone           String?           @db.VarChar(11)
-  email           String?           @db.VarChar(100)
-  church          String?           @db.VarChar(100)
-  status          Boolean           @default(true)
-  documenttype    DocumentType?     @relation(fields: [documenttype_id], references: [id])
-  documenttype_id String?           @db.VarChar(1)
-  user            User?             @relation(fields: [userId], references: [id])
+  id              Int           @id @default(autoincrement())
+  created         DateTime      @default(now())
+  modified        DateTime      @updatedAt
+  code            String?       @db.VarChar(20)
+  doc_num         String        @unique @db.VarChar(15)
+  names           String        @db.VarChar(100)
+  lastnames       String        @db.VarChar(100)
+  gender          String?       @db.VarChar(1)
+  birthday        DateTime?     @db.Date
+  phone           String?       @db.VarChar(11)
+  email           String?       @db.VarChar(100)
+  church          String?       @db.VarChar(100)
+  status          Boolean       @default(true)
+  type_person     TypePerson?
+  documenttype    DocumentType? @relation(fields: [documenttype_id], references: [id])
+  documenttype_id String?       @db.VarChar(1)
+  user            User?         @relation(fields: [userId], references: [id])
   userId          Int?
-  VouchersPersons VouchersPersons[]
+  Inscription     Inscription[]
 
   @@map("person")
 }
 
-model Voucher {
-  id              Int               @id @default(autoincrement())
-  created         DateTime          @default(now())
-  modified        DateTime          @updatedAt
-  code            String?           @db.VarChar(20)
-  picture         String?           @db.VarChar(50)
-  path            String?           @db.VarChar(255)
-  VouchersPersons VouchersPersons[]
-  paymentmethod   PaymentMethod?    @relation(fields: [paymentMethodId], references: [id])
-  paymentMethodId Int?
-
-  @@map("voucher")
+enum StatusInscription {
+  PENDIENTE  @map("P")
+  CONFIRMADO @map("C")
+  REGISTRADO @map("R")
+  ERROR      @map("E")
 }
 
-model VouchersPersons {
-  id         Int      @id @default(autoincrement())
-  person     Person   @relation(fields: [personId], references: [id])
-  personId   Int // relation scalar field (used in the `@relation` attribute above)
-  voucher    Voucher  @relation(fields: [voucherId], references: [id])
-  voucherId  Int // relation scalar field (used in the `@relation` attribute above)
-  assignedAt DateTime @default(now())
-  assignedBy String
-  checkinAt  DateTime
-  checkin    Boolean  @default(false)
+model Inscription {
+  id              Int                @id @default(autoincrement())
+  created         DateTime           @default(now())
+  modified        DateTime           @updatedAt
+  checkinAt       DateTime?
+  status          StatusInscription? @default(PENDIENTE)
+  countgroup      Int
+  vouchergroup    String             @db.VarChar(100)
+  voucherpath     String             @db.VarChar(255)
+  voucheramount   Decimal            @db.Decimal(10, 2)
+  amount          Decimal            @db.Decimal(10, 2)
+  person          Person             @relation(fields: [personId], references: [id])
+  personId        Int
+  paymentmethod   PaymentMethod?     @relation(fields: [paymentMethodId], references: [id])
+  paymentMethodId Int?
 
-  @@map("voucherspersons")
+  @@map("inscription")
 }
 
 model Profile {
