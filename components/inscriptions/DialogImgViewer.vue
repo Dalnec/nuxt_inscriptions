@@ -36,7 +36,11 @@ const downloadImage = () => {
         <DialogDescription> Recibo cargado en la inscripción </DialogDescription>
       </DialogHeader>
       <div class="flex justify-center">
-        <img :src="`/uploads/${props.inscription.voucherpath}`" class="w-[70%]" :alt="props.inscription.vouchergroup" />
+        <img
+          :src="`/images/uploads/${props.inscription.voucherpath}`"
+          class="w-[70%]"
+          :alt="props.inscription.vouchergroup"
+        />
       </div>
       <Button type="button" variant="outline" class="flex w-full items-center" @click="downloadImage()">
         <Icon name="ic:baseline-download" class="text-lg w-5" />
