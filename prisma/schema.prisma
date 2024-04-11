@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgres://postgres.juadtkewsbgtnwtugafl:07712546150990+@aws-0-sa-east-1.pooler.supabase.com:5432/postgres?pgbouncer=true"
 }
 
 model PaymentMethod {
