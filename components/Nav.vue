@@ -9,7 +9,7 @@
         <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
           <NuxtLink
             v-if="$route.name == 'index'"
-            to="/inscriptions"
+            to="/inscriptions/register?group=true"
             class="bg-violet-600 hover:bg-violet-700 text-white font-bold py-2 px-4 rounded shadow-md shadow-violet-600/100 duration-500 transition ease-out scale-100 hover:scale-110"
           >
             Inscribirse!

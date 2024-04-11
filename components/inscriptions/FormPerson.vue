@@ -40,7 +40,20 @@ const loadingdni = ref(false);
 const cardPersonalData = ref(false);
 const formPersonalData = ref(false);
 
+// const is_not_dni = computed(() => {
+//   console.log(formdata.value.doc_num);
+//   console.log(cardPersonalData.value);
+
+//   if (formdata.value.documenttype_id !== "1") {
+//     formPersonalData.value = true;
+//     return true;
+//   }
+//   return false;
+// });
+
 watch(editDataForm, (editForm: any) => {
+  console.log(editForm);
+
   if (editForm) {
     editing.value = true;
     formdata.value = { ...editForm };
@@ -112,13 +125,8 @@ const clearForm = () => {
 
 const getPersonDni = async (dni: string) => {
   loadingdni.value = true;
-  const token = "ba019259a25321333dd5d806678f88d5514a7c2b6c11515481617759d873249b";
-  // const token = "bc019259a25321333dd5d806678f88d5514a7c3b6c91215481607759d873249a";
-  const data = await $fetch(`https://my.apidev.pro/api/dni/${dni}`, {
-    // const data = await $fetch(`https://apiperu.dev/api/dni/${dni}`, {
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-  });
-  console.log("person", data);
+  const data = await $fetch(`/api/person/dni/${dni}`);
+  // console.log("person", data);
   if (data.success) {
     formdata.value.names = data.data.nombres;
     formdata.value.lastnames = `${data.data.apellido_paterno} ${data.data.apellido_materno}`;
@@ -130,6 +138,8 @@ const getPersonDni = async (dni: string) => {
     loadingdni.value = false;
   } else {
     clearForm();
+    formPersonalData.value = true;
+
     toast({
       title: "DNI no encontrado :(",
       description: "Verifique el DNI ingresado",
@@ -144,7 +154,6 @@ const onSubmit = form.handleSubmit(async () => {
   let person: any = listforms.value.find((item) => item.doc_num == formdata.value.doc_num);
   if (person) {
     if (editing.value) {
-      // person = { ...person, ...formdata.value };
       person.doc_num = formdata.value.doc_num;
       person.names = formdata.value.names;
       person.lastnames = formdata.value.lastnames;
@@ -154,7 +163,7 @@ const onSubmit = form.handleSubmit(async () => {
       person.gender = formdata.value.gender;
       person.type_person = formdata.value.type_person;
       person.mode = "list";
-      console.log(person);
+      // console.log(person);
       clearForm();
       toast({
         title: "INSCRIPCIÓN EDITADA",
@@ -250,8 +259,7 @@ const onSubmit = form.handleSubmit(async () => {
         },
       }"
     />
-
-    <div v-show="formPersonalData" class="space-y-5">
+    <div v-show="formPersonalData || formdata.documenttype_id != '1'" class="space-y-5">
       <FormField v-slot="{ componentField }" name="names">
         <FormItem>
           <FormLabel>NOMBRES</FormLabel>
@@ -404,7 +412,7 @@ const onSubmit = form.handleSubmit(async () => {
         class="bg-violet-600 hover:bg-violet-700 text-white shadow-xl shadow-violet-600/60 font-bold py-2 px-4 rounded shadow-md hover:shadow-md duration-500 3ransition ease-out scale-100 hover:scale-110"
         @click.prevent="onSubmit"
       >
-        Agregar!
+        {{ $route.query.group ? "Continuar" : "Agregar!" }}
       </Button>
     </div>
     <!-- {{ formdata }} -->

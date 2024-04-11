@@ -45,23 +45,23 @@ router.get(
   })
 );
 
-// router.get(
-//   "/dni/:dni",
-//   defineEventHandler(async (event) => {
-//     const dni = getRouterParam(event, "dni");
-//     const token = "ba019259a25321333dd5d806678f88d5514a7c2b6c11515481617759d873249b";
-//     if (dni) {
-//       // const person = await fetch(`https://my.apidev.pro/api/dni/${dni}`, {
-//       //   headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-//       // });
-//       return { dni };
-//     }
-//     throw createError({
-//       statusCode: 404,
-//       statusMessage: "No valid value",
-//     });
-//   })
-// );
+router.get(
+  "/dni/:dni",
+  defineEventHandler(async (event) => {
+    const dni = getRouterParam(event, "dni");
+    if (dni) {
+      const token = "ba019259a25321333dd5d806678f88d5514a7c2b6c11515481617759d873249b";
+      const data = await $fetch(`https://my.apidev.pro/api/dni/${dni}`, {
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      });
+      return data;
+    }
+    throw createError({
+      statusCode: 404,
+      statusMessage: "No valid value",
+    });
+  })
+);
 
 router.get(
   "/documenttypes",

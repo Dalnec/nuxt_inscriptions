@@ -62,6 +62,7 @@ const listforms = useListForms();
 onBeforeRouteLeave((to, from) => {
   const answer = window.confirm("¿Deseas salir la inscripción? No se guardaran los datos ingresados.");
   if (!answer) return false;
+  clearData();
 });
 
 const save = async () => {
