@@ -1,0 +1,18 @@
+name: Build and Deploy
+on: [push]
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: download changes, build and run containers
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+          script: |
+            cd nuxt-app
+            git pull
+            docker compose up -d --build
