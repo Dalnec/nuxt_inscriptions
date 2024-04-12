@@ -85,6 +85,10 @@ router.post(
         }
       }
     });
+    // console.log("file", file);
+    // console.log("data", JSON.parse(data));
+    // console.log("payment", payment);
+    // console.log("amount", amount);
 
     const data_person = JSON.parse(data).map((p) => {
       delete p.mode;
