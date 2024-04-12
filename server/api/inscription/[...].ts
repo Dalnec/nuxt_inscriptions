@@ -154,7 +154,7 @@ router.post(
     const all_persons = [...existingPersons, ...new_persons_saved];
 
     const namefile = `${payment}_${groupcode}_${imgcode}.${file.filename.split(".").pop()}`;
-    const path = `./public/uploads/${namefile}`;
+    const path = `/home/ubuntu/inscriptions/nuxt_inscriptions/public/uploads/${namefile}`;
     await writeFile(path, file.data);
 
     // CREATE INSCRIPTION
