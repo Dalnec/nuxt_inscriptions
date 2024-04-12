@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { writeFile } from "fs/promises";
 import { Person } from "./types";
 import { customAlphabet } from "nanoid";
+import path from "path";
 
 const router = createRouter();
 const prisma = new PrismaClient();
@@ -154,8 +155,9 @@ router.post(
     const all_persons = [...existingPersons, ...new_persons_saved];
 
     const namefile = `${payment}_${groupcode}_${imgcode}.${file.filename.split(".").pop()}`;
-    const path = `/home/ubuntu/inscriptions/nuxt_inscriptions/public/uploads/${namefile}`;
-    await writeFile(path, file.data);
+    // const path = `./public/uploads/${namefile}`;
+    const img_path = `${path.join("public", "uploads", namefile)}`;
+    await writeFile(img_path, file.data);
 
     // CREATE INSCRIPTION
     const inscriptions = all_persons.map((i) => {
