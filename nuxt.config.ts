@@ -39,4 +39,12 @@ export default defineNuxtConfig({
     exclude: ["/login", "/register", "/index", "/"],
     cookieRedirect: false,
   },
+  nitro: {
+    storage: {
+      fs: {
+        driver: "fs",
+        base: "./public/uploads",
+      },
+    },
+  },
 });

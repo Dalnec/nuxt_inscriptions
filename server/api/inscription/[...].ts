@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { writeFile } from "fs/promises";
 import { Person } from "./types";
 import { customAlphabet } from "nanoid";
-import path from "path";
+// import path from "path";
 
 const router = createRouter();
 const prisma = new PrismaClient();
@@ -86,10 +86,10 @@ router.post(
         }
       }
     });
-    // console.log("file", file);
-    // console.log("data", JSON.parse(data));
-    // console.log("payment", payment);
-    // console.log("amount", amount);
+    console.log("file", file);
+    console.log("data", JSON.parse(data));
+    console.log("payment", payment);
+    console.log("amount", amount);
 
     const data_person = JSON.parse(data).map((p) => {
       delete p.mode;
@@ -156,10 +156,12 @@ router.post(
 
     const namefile = `${payment}_${groupcode}_${imgcode}.${file.filename.split(".").pop()}`;
     // const path = `./public/uploads/${namefile}`;
-    const img_path = `${path.join("public", "uploads", namefile)}`;
-    console.log("img_path", img_path);
+    // const img_path = `${path.join("public", "uploads", namefile)}`;
+    // console.log("img_path", img_path);
 
-    await writeFile(img_path, file.data);
+    // await writeFile(img_path, file.data);
+
+    await useStorage().setItemRaw(`fs:${namefile}`, file.data);
 
     // CREATE INSCRIPTION
     const inscriptions = all_persons.map((i) => {
