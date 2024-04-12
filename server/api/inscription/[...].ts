@@ -157,6 +157,8 @@ router.post(
     const namefile = `${payment}_${groupcode}_${imgcode}.${file.filename.split(".").pop()}`;
     // const path = `./public/uploads/${namefile}`;
     const img_path = `${path.join("public", "uploads", namefile)}`;
+    console.log("img_path", img_path);
+
     await writeFile(img_path, file.data);
 
     // CREATE INSCRIPTION
