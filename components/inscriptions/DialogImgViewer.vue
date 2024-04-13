@@ -33,7 +33,7 @@ const downloadImage = () => {
     <DialogContent class="sm:max-w-md">
       <DialogHeader>
         <DialogTitle>Vista de Recibo</DialogTitle>
-        <DialogDescription> Recibo cargado en la inscripción </DialogDescription>
+        <DialogDescription> Recibo guardado en la inscripción </DialogDescription>
       </DialogHeader>
       <div class="flex justify-center">
         <img :src="`/uploads/${props.inscription.voucherpath}`" class="w-[70%]" :alt="props.inscription.vouchergroup" />
