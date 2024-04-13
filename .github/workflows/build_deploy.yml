@@ -15,4 +15,4 @@ jobs:
           script: |
             cd /home/ubuntu/inscriptions/nuxt_inscriptions
             git pull
-            docker compose up -d --build
+            pm2 restart inscriptions-nuxt
