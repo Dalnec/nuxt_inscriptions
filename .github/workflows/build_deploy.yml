@@ -15,4 +15,5 @@ jobs:
           script: |
             cd /home/ubuntu/inscriptions/nuxt_inscriptions
             git pull
+            npm run build            
             pm2 restart inscriptions-nuxt
