@@ -47,5 +47,8 @@ export default defineNuxtConfig({
       },
     },
   },
-  image: { dir: "./public" },
+  image: { dir: "./public", provider: "ipx", ipx: {} },
+  serverMiddleware: {
+    "/_ipx": "~/server/middleware/ipx.js",
+  },
 });
