@@ -20,7 +20,7 @@ import { ref } from "vue";
 const slides = ref([
   { image: "/images/banners/BannerCamp2024_1.png", alt: "banner 1" },
   { image: "/images/banners/BannerCamp2024_2.png", alt: "banner 2" },
-  { image: "/images/banners/BannerCamp2024_2.png", alt: "banner 3" },
+  { image: "/images/banners/BannerCamp2024_3.png", alt: "banner 3" },
 ]);
 </script>
 

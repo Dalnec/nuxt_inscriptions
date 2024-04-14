@@ -15,5 +15,7 @@ jobs:
           script: |
             cd /home/ubuntu/inscriptions/nuxt_inscriptions
             git pull
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh 
             npm run build            
             pm2 restart inscriptions-nuxt
