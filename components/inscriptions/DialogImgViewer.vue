@@ -17,7 +17,7 @@ const props = defineProps<{
 
 const downloadImage = () => {
   const link = document.createElement("a");
-  link.href = `/uploads/${props.inscription.voucherpath}`;
+  link.href = imageUrl.value;
   link.download = `${props.inscription.vouchergroup}.jpg`;
   link.click();
 };
@@ -27,15 +27,12 @@ const imageUrl = ref("");
 // Obtener la imagen desde el servidor
 async function fetchImage() {
   const response = await fetch(`/api/sendImage/${props.inscription.voucherpath}`);
-  console.log(response);
-
   if (response.ok) {
     imageUrl.value = URL.createObjectURL(await response.blob());
   } else {
     console.error("Error al obtener la imagen");
   }
 }
-
 // Llamar a fetchImage cuando la página se carga
 fetchImage();
 </script>
@@ -54,14 +51,6 @@ fetchImage();
       </DialogHeader>
       <div class="flex justify-center">
         <img :src="imageUrl" alt="Imagen enviada desde el servidor" class="w-[70%]" />
-      </div>
-      <div class="flex justify-center">
-        <!-- <img :src="`/uploads/${props.inscription.voucherpath}`" class="w-[70%]" :alt="props.inscription.vouchergroup" /> -->
-        <NuxtImg
-          :src="`uploads/${props.inscription.voucherpath}`"
-          class="w-[70%]"
-          :alt="props.inscription.voucherpath"
-        />
       </div>
       <Button type="button" variant="outline" class="flex w-full items-center" @click="downloadImage()">
         <Icon name="ic:baseline-download" class="text-lg w-5" />
