@@ -19,7 +19,8 @@ const loadData = async () => {
     params: { search: search.value, take: 20, skip: (currentPage.value - 1) * 20 },
   });
   console.log(res);
-
+  // data.value = { results: res.results.map((r) => ({ ...r, reload: loadData })), count: res.count };
+  // console.log("data", data.value);
   data.value = res;
   pending.value = false;
 };
@@ -86,7 +87,7 @@ onMounted(async () => {
   </div>
   <div v-if="pending" class="flex justify-center">Cargando...</div>
   <div v-else class="container py-1 px-3">
-    <DataTable :columns="columns" :data="data.results" :props="tableprops" />
+    <DataTable :columns="columns" :data="data.results" :tableprops="tableprops" />
     <ListaPagination :total="data.count" :currentPage="currentPage" :itemsPerPage="20" @changePage="changePage" />
   </div>
 </template>

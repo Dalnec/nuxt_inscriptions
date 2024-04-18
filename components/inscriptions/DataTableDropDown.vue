@@ -1,20 +1,40 @@
 // DataTableDropDown.vue
 <script setup lang="ts">
 import { MoreHorizontal } from "lucide-vue-next";
+import { toast } from "@/components/ui/toast";
 
-defineProps<{
-  inscription: {
-    id: string;
-  };
-}>();
-
+// const props = defineProps<{
+//   inscription: {};
+// }>();
+const { props = {} } = defineProps(["props"]);
 // function copy(id: string) {
 //   navigator.clipboard.writeText(id);
 // }
 
 const changeStatus = async (item: any) => {
   const res = await $fetch(`/api/inscription/${item.id}`, { method: "PUT", body: { status: "CONFIRMADO" } });
-  console.log(res);
+  if (res.success) {
+    toast({
+      title: "CAMBIO DE ESTADO",
+      description: "Proceso realizado con exito",
+      class: "bg-green-600 text-white py-3",
+      duration: 3000,
+    });
+    props.reload();
+  }
+};
+const deleteInscription = async (item: any) => {
+  // const res = await $fetch(`/api/inscription/${item.id}`, { method: "PUT", body: { status: "CONFIRMADO" } });
+  // if (res.success) {
+  if (true) {
+    toast({
+      title: "INSCRIPCION ELIMINADA :(",
+      description: "",
+      class: "bg-red-600 text-white py-3",
+      duration: 3000,
+    });
+    // props.reload();
+  }
 };
 </script>
 
@@ -28,9 +48,10 @@ const changeStatus = async (item: any) => {
     </DropdownMenuTrigger>
     <DropdownMenuContent>
       <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-      <DropdownMenuItem @click="changeStatus(inscription)" :disabled="inscription.status == 'CONFIRMADO'">
+      <DropdownMenuItem @click="changeStatus(props.inscription)" :disabled="props.inscription.status == 'CONFIRMADO'">
         Confirmar
       </DropdownMenuItem>
+      <DropdownMenuItem @click="deleteInscription(props.inscription)"> Eliminar </DropdownMenuItem>
       <!-- <DropdownMenuSeparator />
       <DropdownMenuItem>View customer</DropdownMenuItem>
       <DropdownMenuItem>View inscription details</DropdownMenuItem> -->

@@ -35,6 +35,7 @@
     "vee-validate": "^4.12.6",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0",
+    "vue3-ytframe": "^0.4.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {

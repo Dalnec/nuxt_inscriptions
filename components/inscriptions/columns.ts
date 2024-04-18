@@ -1,14 +1,5 @@
 import { h } from "vue";
-import type { ColumnFiltersState, SortingState, VisibilityState } from "@tanstack/vue-table";
-import {
-  FlexRender,
-  createColumnHelper,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useVueTable,
-} from "@tanstack/vue-table";
+import { createColumnHelper } from "@tanstack/vue-table";
 import { ArrowUpDown, ChevronDown } from "lucide-vue-next";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
@@ -70,30 +61,12 @@ const columnHelper = createColumnHelper<PersonInscription>();
 
 export const columns = [
   columnHelper.accessor("person", {
-    header: ({ column }) => {
-      return h(
-        Button,
-        {
-          variant: "ghost",
-          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
-        },
-        () => ["DNI", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
-      );
-    },
+    header: "DNI",
     cell: ({ row }) => h("div", { class: "flex justify-center" }, row.getValue("person").doc_num),
   }),
 
   columnHelper.accessor("person", {
-    header: ({ column }) => {
-      return h(
-        Button,
-        {
-          variant: "ghost",
-          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
-        },
-        () => ["NOMBRES", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
-      );
-    },
+    header: "NOMBRES",
     cell: ({ row }) =>
       h("div", { class: "uppercase" }, `${row.getValue("person").names} ${row.getValue("person").lastnames}`),
   }),
@@ -103,18 +76,15 @@ export const columns = [
     header: "GENERO",
     cell: ({ row }) => {
       let genderClass = "";
-      let genderValue = "";
       if (row.getValue("person").gender === "M") {
         genderClass = "text-blue-500 border-blue-500";
-        // genderValue = "MASCULINO";
       } else {
         genderClass = "text-pink-500 border-pink-500";
-        // genderValue = "FEMENINO";
       }
       return h(
         "div",
         { class: "capitalize" },
-        h(Badge, { variant: "outline", class: genderClass }, () => row.getValue("person").gender /* genderValue */)
+        h(Badge, { variant: "outline", class: genderClass }, () => row.getValue("person").gender)
       );
     },
   }),
@@ -124,7 +94,16 @@ export const columns = [
     cell: ({ row }) => h("div", { class: "flex justify-center" }, row.getValue("countgroup")),
   }),
   columnHelper.accessor("vouchergroup", {
-    header: "COD GRUPO",
+    header: ({ column }) => {
+      return h(
+        Button,
+        {
+          variant: "ghost",
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+        },
+        () => ["COD GRUPO", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      );
+    },
     cell: ({ row }) => h("div", { class: "flex justify-center" }, row.getValue("vouchergroup")),
   }),
 
@@ -155,7 +134,16 @@ export const columns = [
 
   columnHelper.accessor("status", {
     enablePinning: true,
-    header: "ESTADO",
+    header: ({ column }) => {
+      return h(
+        Button,
+        {
+          variant: "ghost",
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+        },
+        () => ["ESTADO", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      );
+    },
     cell: ({ row }) =>
       h(
         "div",
@@ -167,14 +155,14 @@ export const columns = [
   columnHelper.display({
     id: "actions",
     enableHiding: false,
-    cell: ({ row }) => {
-      const inscription = row.original;
+    cell: ({ row, table }) => {
+      // const inscription = row.original;
 
       return h(
         "div",
         { class: "relative" },
         h(DropdownAction, {
-          inscription,
+          props: { inscription: row.original, reload: table.options.meta.reload },
         })
       );
     },
@@ -219,9 +207,11 @@ export const columnsExample = [
 
       return h(
         "div",
-        { class: "relative" },
+        {
+          class: "relative",
+        },
         h(DropdownAction, {
-          payment,
+          inscription: row.original,
         })
       );
     },

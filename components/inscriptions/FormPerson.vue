@@ -34,6 +34,7 @@ const defaultformdata = ref({
   phone: "",
   gender: "",
   type_person: "",
+  mode: "list",
 });
 const formdata = ref({ ...defaultformdata.value });
 const loadingdni = ref(false);
@@ -144,7 +145,7 @@ const getPersonDni = async (dni: string) => {
       title: "DNI no encontrado :(",
       description: "Verifique el DNI ingresado",
       class: "bg-red-500 text-white font-bold py-3",
-      duration: 3000,
+      duration: 2000,
     });
   }
   loadingdni.value = false;
@@ -169,28 +170,29 @@ const onSubmit = form.handleSubmit(async () => {
         title: "INSCRIPCIÓN EDITADA",
         description: "Cambios realizados con exito",
         class: "bg-green-600 text-white py-3",
-        duration: 3000,
+        duration: 2000,
       });
     } else {
       toast({
         title: "** Verifique el DNI ingresado! **",
         description: "Una persona ya se encuentra registrada con este DNI.",
         class: "bg-red-500 text-white font-bold py-3",
-        duration: 3000,
+        duration: 2000,
       });
     }
   } else {
-    setTimeout(() => {
-      listforms.value.push({ ...formdata.value, mode: "list" });
-      clearForm();
-    }, 300);
-
     toast({
       title: "INSCRIPCIÓN AÑADIDA",
       description: "Se añadio la inscripción con exito",
       class: "bg-green-600 text-white py-3",
-      duration: 3000,
+      duration: 1800,
     });
+
+    setTimeout(() => {
+      listforms.value.push({ ...formdata.value });
+      clearForm();
+      props.open = !props.open;
+    }, 250);
   }
 });
 </script>
@@ -245,6 +247,9 @@ const onSubmit = form.handleSubmit(async () => {
             </Button>
           </div>
         </FormControl>
+        <FormDescription v-if="formdata.documenttype_id == '1'">
+          Ingresar Numero de DNI y presionar el boton para buscar.
+        </FormDescription>
         <FormMessage />
       </FormItem>
     </FormField>

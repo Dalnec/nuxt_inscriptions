@@ -86,10 +86,10 @@ router.post(
         }
       }
     });
-    console.log("file", file);
-    console.log("data", JSON.parse(data));
-    console.log("payment", payment);
-    console.log("amount", amount);
+    // console.log("file", file);
+    // console.log("data", JSON.parse(data));
+    // console.log("payment", payment);
+    // console.log("amount", amount);
 
     const data_person = JSON.parse(data).map((p) => {
       delete p.mode;
@@ -221,12 +221,13 @@ router.put(
     const id = Number(getRouterParam(event, "id"));
     const body = await readBody(event);
     if (body) {
-      return await prisma.inscription.update({
+      const updateddata = await prisma.inscription.update({
         where: { id },
         data: {
           ...body,
         },
       });
+      return { success: true, data: updateddata };
     }
 
     throw createError({

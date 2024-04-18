@@ -1,21 +1,14 @@
 <script setup lang="ts" generic="TData, TValue">
 import type { ColumnDef } from "@tanstack/vue-table";
-import { FlexRender, getCoreRowModel, useVueTable } from "@tanstack/vue-table";
-
-// import {
-//     Table,
-//     TableBody,
-//     TableCell,
-//     TableHead,
-//     TableHeader,
-//     TableRow,
-// } from "@/components/ui/table"
+import { FlexRender, getCoreRowModel, useVueTable, getSortedRowModel } from "@tanstack/vue-table";
+import type { SortingState } from "@tanstack/vue-table";
 
 const props = defineProps<{
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  props: any;
+  tableprops: any;
 }>();
+const sorting = ref<SortingState>([]);
 
 const table = useVueTable({
   get data() {
@@ -25,6 +18,18 @@ const table = useVueTable({
     return props.columns;
   },
   getCoreRowModel: getCoreRowModel(),
+  getSortedRowModel: getSortedRowModel(),
+  state: {
+    get sorting() {
+      return sorting.value;
+    },
+  },
+  onSortingChange: (updaterOrValue) => {
+    sorting.value = typeof updaterOrValue === "function" ? updaterOrValue(sorting.value) : updaterOrValue;
+  },
+  meta: {
+    reload: () => props.tableprops.tablerefresh(),
+  },
 });
 </script>
 
@@ -45,7 +50,6 @@ const table = useVueTable({
       <TableBody>
         <template v-if="table.getRowModel().rows?.length">
           <TableRow v-for="row in table.getRowModel().rows" :key="row.id">
-            <!-- :data-state="row.getIsSelected() ? 'selected' : undefined" -->
             <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
               <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
             </TableCell>

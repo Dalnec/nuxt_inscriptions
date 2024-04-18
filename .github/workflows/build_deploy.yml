@@ -18,4 +18,4 @@ jobs:
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh 
             npm run build            
-            pm2 restart inscriptions-nuxt
+            pm2 restart NuxtInscriptions

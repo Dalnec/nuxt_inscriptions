@@ -16,6 +16,7 @@ const showpayment = ref(false);
 const switchDisabled = ref(true);
 const loadingSave = ref(false);
 
+const listforms = useListForms();
 const changeLoadingRegister = () => {
   loadingRegister.value = true;
   setTimeout(() => {
@@ -35,7 +36,19 @@ const deleteAlert = (index) => {
   alertmessaje.value.data.splice(index, 1);
 };
 
+const open = ref(true);
+const openChange = (valor) => {
+  open.value = !open.value;
+};
+
 const alertmessaje = ref({ data: [], delete: deleteAlert });
+const propsSheet = ref({
+  listforms,
+  changeView: changeView,
+  open,
+  openChange: openChange,
+});
+
 const propsFormPayment = ref({
   paymentsMethods,
   disabledSend,
@@ -57,7 +70,10 @@ const clearData = () => {
   listforms.value = [];
 };
 
-const listforms = useListForms();
+const propsFormPerson = ref({
+  documentTypes: documentTypes,
+  open,
+});
 
 onBeforeRouteLeave((to, from) => {
   const answer = window.confirm("¿Deseas salir la inscripción? No se guardaran los datos ingresados.");
@@ -67,7 +83,7 @@ onBeforeRouteLeave((to, from) => {
 
 const save = async () => {
   loadingSave.value = true;
-  console.log("save", { persons: [...listforms.value], payment: { ...propsFormPayment.value.paymentForm } });
+  // console.log("save", { persons: [...listforms.value], payment: { ...propsFormPayment.value.paymentForm } });
   const dataform = { persons: [...listforms.value], payment: { ...propsFormPayment.value.paymentForm } };
   if (dataform.persons.length > 0) {
     if (dataform.payment.paymentmethod) {
@@ -90,7 +106,7 @@ const save = async () => {
               body: formData,
             });
 
-            console.log(res);
+            // console.log(res);
             if (!res.success) {
               res.data.forEach((p) => {
                 alertmessaje.value.data.push({
@@ -127,43 +143,44 @@ const save = async () => {
 };
 </script>
 <template>
-  <ClientOnly>
-    <div class="w-full flex justify-center">
-      <div v-if="dt_pending || pm_pending" class="flex justify-center h-100">Cargando...</div>
-      <Card class="w-full md:w-1/2 lg:w-2/5">
-        <CardHeader>
-          <CardTitle>FORMULARIO DE INSCRIPCION</CardTitle>
-          <CardDescription>Ingrese los datos correspondientes</CardDescription>
-          <Separator />
-          <InscriptionsAlertRegister :props="alertmessaje" />
-        </CardHeader>
-        <CardContent class="space-y-4 pb-0">
-          <InscriptionsFormPerson v-show="!showpayment" :props="{ documentTypes }" />
-          <InscriptionsFormPayment v-show="showpayment" :props="propsFormPayment" />
-        </CardContent>
-        <CardHeader>
-          <Separator />
-        </CardHeader>
-        <CardContent class="space-y-4">
-          <Sheet v-if="$route.query.group && listforms.length > 0">
-            <SheetTrigger as-child class="flex justify-center">
-              <Button variant="outline" class="w-full">
-                <Icon name="icon-park-outline:list" class="h-4 w-4 mr-1" />
-                Ver Lista
-              </Button>
-            </SheetTrigger>
-            <InscriptionsSheetPersons :props="{ listforms, changeView: changeView }" />
-          </Sheet>
-          <Button
-            v-if="showpayment"
-            class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold my-2 py-8 px-4 rounded shadow-lg text-lg"
-            @click="save"
-            :disabled="switchDisabled || listforms.length == 0 || loadingSave"
-          >
-            ENVIAR!
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
-  </ClientOnly>
+  <div>
+    <ClientOnly>
+      <div class="w-full flex justify-center">
+        <div v-if="dt_pending || pm_pending" class="flex justify-center h-100">Cargando...</div>
+        <Card class="w-full md:w-1/2 lg:w-2/5">
+          <CardHeader>
+            <CardTitle>FORMULARIO DE INSCRIPCION</CardTitle>
+            <CardDescription>Ingrese los datos correspondientes</CardDescription>
+            <Separator />
+            <InscriptionsAlertRegister :props="alertmessaje" />
+          </CardHeader>
+          <CardContent class="space-y-4 pb-0">
+            <InscriptionsFormPerson v-show="!showpayment" :props="propsFormPerson" />
+            <InscriptionsFormPayment v-show="showpayment" :props="propsFormPayment" />
+          </CardContent>
+          <CardHeader>
+            <Separator />
+          </CardHeader>
+          <CardContent class="space-y-4">
+            <Button variant="outline" class="w-full" @click="open = !open">
+              <Icon name="icon-park-outline:list" class="h-4 w-4 mr-1" />
+              Ver Lista
+            </Button>
+            <div>
+              <InscriptionsSheetPersons v-if="listforms.length > 0" :props="propsSheet" />
+            </div>
+
+            <Button
+              v-if="showpayment"
+              class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold my-2 py-8 px-4 rounded shadow-lg text-lg"
+              @click="save"
+              :disabled="switchDisabled || listforms.length == 0 || loadingSave"
+            >
+              ENVIAR!
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    </ClientOnly>
+  </div>
 </template>
