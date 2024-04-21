@@ -77,6 +77,20 @@ router.get(
   })
 );
 
+router.get(
+  "/churches",
+  defineEventHandler(async (event) => {
+    const churches = await prisma.church.findMany({ where: { active: true } });
+    if (churches) {
+      return churches;
+    }
+    throw createError({
+      statusCode: 404,
+      statusMessage: "No valid value",
+    });
+  })
+);
+
 router.put(
   "/:id",
   defineEventHandler(async (event) => {

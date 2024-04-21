@@ -18,6 +18,15 @@ model PaymentMethod {
   @@map("paymentmethod")
 }
 
+model Church {
+  id          Int      @id @default(autoincrement())
+  description String   @unique() @db.VarChar(200)
+  active      Boolean  @default(true)
+  persons     Person[]
+
+  @@map("church")
+}
+
 model DocumentType {
   id          String   @id @db.VarChar(2)
   description String   @unique() @db.VarChar(200)
@@ -45,11 +54,12 @@ model Person {
   birthday        DateTime?     @db.Date
   phone           String?       @db.VarChar(11)
   email           String?       @db.VarChar(100)
-  church          String?       @db.VarChar(100)
   status          Boolean       @default(true)
   type_person     TypePerson?
   documenttype    DocumentType? @relation(fields: [documenttype_id], references: [id])
   documenttype_id String?       @db.VarChar(1)
+  church          Church?       @relation(fields: [church_id], references: [id])
+  church_id       Int?
   user            User?         @relation(fields: [userId], references: [id])
   userId          Int?
   Inscription     Inscription[]

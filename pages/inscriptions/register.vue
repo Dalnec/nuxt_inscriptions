@@ -4,6 +4,9 @@ definePageMeta({
   layout: "registration",
 });
 
+const { pending: ch_pending, data: churches } = await useFetch("/api/person/churches", {
+  lazy: false,
+});
 const { pending: dt_pending, data: documentTypes } = await useFetch("/api/person/documenttypes", {
   lazy: false,
 });
@@ -17,6 +20,8 @@ const switchDisabled = ref(true);
 const loadingSave = ref(false);
 
 const listforms = useListForms();
+const useloading = useLoading();
+
 const changeLoadingRegister = () => {
   loadingRegister.value = true;
   setTimeout(() => {
@@ -72,6 +77,7 @@ const clearData = () => {
 
 const propsFormPerson = ref({
   documentTypes: documentTypes,
+  churches: churches,
   open,
 });
 
@@ -83,6 +89,8 @@ onBeforeRouteLeave((to, from) => {
 
 const save = async () => {
   loadingSave.value = true;
+  useloading.value = true;
+
   // console.log("save", { persons: [...listforms.value], payment: { ...propsFormPayment.value.paymentForm } });
   const dataform = { persons: [...listforms.value], payment: { ...propsFormPayment.value.paymentForm } };
   if (dataform.persons.length > 0) {
@@ -130,6 +138,7 @@ const save = async () => {
               duration: 4000,
             });
             setTimeout(() => {
+              useloading.value = false;
               loadingSave.value = false;
             }, 2000);
             return;
@@ -145,6 +154,7 @@ const save = async () => {
 <template>
   <div>
     <ClientOnly>
+      <LoadingView v-if="useloading" />
       <div class="w-full flex justify-center">
         <div v-if="dt_pending || pm_pending" class="flex justify-center h-100">Cargando...</div>
         <Card class="w-full md:w-1/2 lg:w-2/5">
@@ -162,16 +172,15 @@ const save = async () => {
             <Separator />
           </CardHeader>
           <CardContent class="space-y-4">
-            <Button variant="outline" class="w-full" @click="open = !open">
+            <Button v-show="listforms.length > 0" variant="outline" class="w-full" @click="open = !open">
               <Icon name="icon-park-outline:list" class="h-4 w-4 mr-1" />
               Ver Lista
             </Button>
             <div>
               <InscriptionsSheetPersons v-if="listforms.length > 0" :props="propsSheet" />
             </div>
-
             <Button
-              v-if="showpayment"
+              v-show="listforms.length > 0"
               class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold my-2 py-8 px-4 rounded shadow-lg text-lg"
               @click="save"
               :disabled="switchDisabled || listforms.length == 0 || loadingSave"

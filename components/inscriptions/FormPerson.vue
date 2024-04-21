@@ -4,7 +4,8 @@ import { useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as z from "zod";
 import { format, parseISO } from "date-fns";
-
+import { CalendarDate, DateFormatter, getLocalTimeZone, parseDate, today } from "@internationalized/date";
+// import { toDate } from "radix-vue/date";
 import { Button } from "@/components/ui/button";
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,7 @@ const listforms = useListForms();
 const editDataForm = useForms();
 const editing = ref(false);
 const documentTypes = ref([]);
+const churches = ref([]);
 const documentLabel = ref("DNI");
 
 const changeDocumentLabel = (selected: string) => {
@@ -29,7 +31,7 @@ const defaultformdata = ref({
   doc_num: "",
   names: "",
   lastnames: "",
-  church: "",
+  church: undefined,
   birthday: "",
   phone: "",
   gender: "",
@@ -40,17 +42,7 @@ const formdata = ref({ ...defaultformdata.value });
 const loadingdni = ref(false);
 const cardPersonalData = ref(false);
 const formPersonalData = ref(false);
-
-// const is_not_dni = computed(() => {
-//   console.log(formdata.value.doc_num);
-//   console.log(cardPersonalData.value);
-
-//   if (formdata.value.documenttype_id !== "1") {
-//     formPersonalData.value = true;
-//     return true;
-//   }
-//   return false;
-// });
+const birthday = ref();
 
 watch(editDataForm, (editForm: any) => {
   console.log(editForm);
@@ -66,9 +58,8 @@ watch(editDataForm, (editForm: any) => {
 
 onMounted(() => {
   documentTypes.value = props.documentTypes;
+  churches.value = props.churches;
 });
-
-// const documentTypes = ref([]);
 
 const formSchema = toTypedSchema(
   z.object({
@@ -98,7 +89,14 @@ const formSchema = toTypedSchema(
         message: "No puede superar los 30 caracteres.",
       }),
     gender: z.string({ required_error: "Campo requerido" }),
-    birthday: z.string({ required_error: "Campo requerido" }),
+    // birthday: z.string({ required_error: "Campo requerido" }),
+    birthday: z.object({
+      calendar: z.object({}),
+      era: z.string(),
+      year: z.number(),
+      month: z.number(),
+      day: z.number(),
+    }),
     phone: z.string().regex(phoneRegex, "Numero de Celular invalido").max(9, {
       message: "No puede superar los 9 caracteres.",
     }),
@@ -132,6 +130,7 @@ const getPersonDni = async (dni: string) => {
     formdata.value.names = data.data.nombres;
     formdata.value.lastnames = `${data.data.apellido_paterno} ${data.data.apellido_materno}`;
     formdata.value.birthday = data.data.fecha_nacimiento;
+    birthday.value = parseDate(data.data.fecha_nacimiento);
     formdata.value.gender = data.data.sexo == "MASCULINO" ? "M" : "F";
     form.resetForm({ values: { ...formdata.value } });
     cardPersonalData.value = true;
@@ -195,6 +194,12 @@ const onSubmit = form.handleSubmit(async () => {
     }, 250);
   }
 });
+
+const handleSelect = (option: any) => {
+  formdata.value.church = option.id;
+};
+
+const df = new DateFormatter("en-US");
 </script>
 
 <template>
@@ -323,19 +328,25 @@ const onSubmit = form.handleSubmit(async () => {
       <FormField v-slot="{ componentField }" name="birthday">
         <FormItem class="flex flex-col">
           <FormLabel>FECHA DE NACIMIENTO</FormLabel>
+          {{ typeof birthday }}
           <Popover>
             <PopoverTrigger as-child>
               <FormControl>
                 <Button variant="outline">
                   <span>
-                    {{ formdata.birthday ? format(parseISO(formdata.birthday), "dd-MM-yyyy") : "Seleccione una fecha" }}
+                    {{ formdata.birthday ? df.format(birthday.toDate(getLocalTimeZone())) : "Seleccione una fecha" }}
+                    <!-- {{ formdata.birthday ? format(parseISO(formdata.birthday), "dd-MM-yyyy") : "Seleccione una fecha" }} -->
                   </span>
                   <Icon name="ion:calendar-outline" class="ms-auto h-5 w-5 opacity-80 mr-2" />
                 </Button>
               </FormControl>
             </PopoverTrigger>
             <PopoverContent class="p-0">
-              <Calendar v-bind="componentField" v-model="formdata.birthday" />
+              <Calendar
+                v-bind="componentField"
+                v-model="birthday"
+                @update:modelValue="formdata.birthday = df.format(birthday.toDate(getLocalTimeZone()))"
+              />
             </PopoverContent>
           </Popover>
           <FormMessage />
@@ -388,7 +399,7 @@ const onSubmit = form.handleSubmit(async () => {
       </FormItem>
     </FormField>
 
-    <FormField v-slot="{ componentField }" name="church">
+    <!-- <FormField v-slot="{ componentField }" name="church">
       <FormItem>
         <FormLabel>IGLESIA</FormLabel>
         <FormControl>
@@ -403,6 +414,13 @@ const onSubmit = form.handleSubmit(async () => {
         <FormDescription> Si es el caso. Ingresa nombre de la iglesia donde congregas </FormDescription>
         <FormMessage />
       </FormItem>
+    </FormField> -->
+    <FormField name="church">
+      <FormItem class="flex flex-col">
+        <FormLabel>IGLESIA</FormLabel>
+        <InscriptionsFilterableSelect :options="churches" @select="handleSelect" />
+        <FormDescription> Si es el caso. Ingresa nombre de la iglesia donde congregas. </FormDescription>
+      </FormItem>
     </FormField>
     <div class="flex justify-between">
       <Button
@@ -414,7 +432,7 @@ const onSubmit = form.handleSubmit(async () => {
       </Button>
 
       <Button
-        class="bg-violet-600 hover:bg-violet-700 text-white shadow-xl shadow-violet-600/60 font-bold py-2 px-4 rounded shadow-md hover:shadow-md duration-500 3ransition ease-out scale-100 hover:scale-110"
+        class="bg-violet-600 hover:bg-violet-700 text-white shadow-xl shadow-violet-600/60 font-bold py-2 px-4 rounded shadow-md hover:shadow-md duration-500"
         @click.prevent="onSubmit"
       >
         {{ $route.query.group ? "Continuar" : "Agregar!" }}
