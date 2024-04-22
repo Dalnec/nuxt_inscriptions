@@ -95,7 +95,7 @@ router.post(
       delete p.mode;
       return {
         ...p,
-        birthday: new Date(p.birthday).toISOString(),
+        birthday: p.birthday ? new Date(p.birthday).toISOString() : null,
         type_person: typePerson[p.type_person],
       };
     });

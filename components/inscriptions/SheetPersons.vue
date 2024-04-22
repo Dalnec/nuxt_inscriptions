@@ -13,6 +13,12 @@ const deleteItem = (index: any) => {
     props.changeView(false);
   }
 };
+
+const getChurchDescription = (item: any) => {
+  console.log(item);
+
+  return props.churches.find((c: any) => c.id == item.church_id)?.description;
+};
 </script>
 
 <template>
@@ -41,7 +47,7 @@ const deleteItem = (index: any) => {
             <InscriptionsInfoPersonCard
               v-for="(item, index) in props.listforms"
               :key="item.doc_num"
-              :props="{ item, mode: 'list', edit: edit, delete: deleteItem, index }"
+              :props="{ item, mode: 'list', edit: edit, delete: deleteItem, index, getchurch: getChurchDescription }"
             />
           </SheetClose>
         </div>

@@ -31,7 +31,7 @@ const defaultformdata = ref({
   doc_num: "",
   names: "",
   lastnames: "",
-  church: undefined,
+  church_id: null,
   birthday: "",
   phone: "",
   gender: "",
@@ -42,6 +42,7 @@ const formdata = ref({ ...defaultformdata.value });
 const loadingdni = ref(false);
 const cardPersonalData = ref(false);
 const formPersonalData = ref(false);
+const pagedNavigation = ref(true);
 const birthday = ref();
 
 watch(editDataForm, (editForm: any) => {
@@ -50,6 +51,7 @@ watch(editDataForm, (editForm: any) => {
   if (editForm) {
     editing.value = true;
     formdata.value = { ...editForm };
+    birthday.value = parseDate(formdata.value.birthday);
     cardPersonalData.value = true;
     form.resetForm({ values: { ...formdata.value } });
     formPersonalData.value = false;
@@ -90,13 +92,13 @@ const formSchema = toTypedSchema(
       }),
     gender: z.string({ required_error: "Campo requerido" }),
     // birthday: z.string({ required_error: "Campo requerido" }),
-    birthday: z.object({
-      calendar: z.object({}),
-      era: z.string(),
-      year: z.number(),
-      month: z.number(),
-      day: z.number(),
-    }),
+    // birthday: z.object({
+    //   calendar: z.object({}),
+    //   era: z.string(),
+    //   year: z.number(),
+    //   month: z.number(),
+    //   day: z.number(),
+    // }),
     phone: z.string().regex(phoneRegex, "Numero de Celular invalido").max(9, {
       message: "No puede superar los 9 caracteres.",
     }),
@@ -120,6 +122,7 @@ const clearForm = () => {
   formPersonalData.value = false;
   formdata.value = { ...defaultformdata.value };
   form.resetForm({ values: { ...formdata.value } });
+  birthday.value = undefined;
 };
 
 const getPersonDni = async (dni: string) => {
@@ -130,7 +133,7 @@ const getPersonDni = async (dni: string) => {
     formdata.value.names = data.data.nombres;
     formdata.value.lastnames = `${data.data.apellido_paterno} ${data.data.apellido_materno}`;
     formdata.value.birthday = data.data.fecha_nacimiento;
-    birthday.value = parseDate(data.data.fecha_nacimiento);
+    birthday.value = parseISO(data.data.fecha_nacimiento);
     formdata.value.gender = data.data.sexo == "MASCULINO" ? "M" : "F";
     form.resetForm({ values: { ...formdata.value } });
     cardPersonalData.value = true;
@@ -151,13 +154,15 @@ const getPersonDni = async (dni: string) => {
 };
 
 const onSubmit = form.handleSubmit(async () => {
+  console.log(formdata.value);
+
   let person: any = listforms.value.find((item) => item.doc_num == formdata.value.doc_num);
   if (person) {
     if (editing.value) {
       person.doc_num = formdata.value.doc_num;
       person.names = formdata.value.names;
       person.lastnames = formdata.value.lastnames;
-      person.church = formdata.value.church;
+      person.church_id = formdata.value.church_id;
       person.birthday = formdata.value.birthday;
       person.phone = formdata.value.phone;
       person.gender = formdata.value.gender;
@@ -196,7 +201,7 @@ const onSubmit = form.handleSubmit(async () => {
 });
 
 const handleSelect = (option: any) => {
-  formdata.value.church = option.id;
+  formdata.value.church_id = option.id;
 };
 
 const df = new DateFormatter("en-US");
@@ -328,27 +333,7 @@ const df = new DateFormatter("en-US");
       <FormField v-slot="{ componentField }" name="birthday">
         <FormItem class="flex flex-col">
           <FormLabel>FECHA DE NACIMIENTO</FormLabel>
-          {{ typeof birthday }}
-          <Popover>
-            <PopoverTrigger as-child>
-              <FormControl>
-                <Button variant="outline">
-                  <span>
-                    {{ formdata.birthday ? df.format(birthday.toDate(getLocalTimeZone())) : "Seleccione una fecha" }}
-                    <!-- {{ formdata.birthday ? format(parseISO(formdata.birthday), "dd-MM-yyyy") : "Seleccione una fecha" }} -->
-                  </span>
-                  <Icon name="ion:calendar-outline" class="ms-auto h-5 w-5 opacity-80 mr-2" />
-                </Button>
-              </FormControl>
-            </PopoverTrigger>
-            <PopoverContent class="p-0">
-              <Calendar
-                v-bind="componentField"
-                v-model="birthday"
-                @update:modelValue="formdata.birthday = df.format(birthday.toDate(getLocalTimeZone()))"
-              />
-            </PopoverContent>
-          </Popover>
+          <InscriptionsFormCalendar :strdate="birthday" @selectedDate="(value) => (formdata.birthday = value)" />
           <FormMessage />
         </FormItem>
       </FormField>
@@ -415,13 +400,14 @@ const df = new DateFormatter("en-US");
         <FormMessage />
       </FormItem>
     </FormField> -->
-    <FormField name="church">
+    <FormField name="church_id">
       <FormItem class="flex flex-col">
         <FormLabel>IGLESIA</FormLabel>
-        <InscriptionsFilterableSelect :options="churches" @select="handleSelect" />
+        <InscriptionsFilterableSelect :options="churches" @select="handleSelect" :selectedId="formdata.church_id" />
         <FormDescription> Si es el caso. Ingresa nombre de la iglesia donde congregas. </FormDescription>
       </FormItem>
     </FormField>
+
     <div class="flex justify-between">
       <Button
         variant="outline"

@@ -52,6 +52,7 @@ const propsSheet = ref({
   changeView: changeView,
   open,
   openChange: openChange,
+  churches: churches,
 });
 
 const propsFormPayment = ref({
@@ -180,7 +181,7 @@ const save = async () => {
               <InscriptionsSheetPersons v-if="listforms.length > 0" :props="propsSheet" />
             </div>
             <Button
-              v-show="listforms.length > 0"
+              v-show="listforms.length > 0 && showpayment"
               class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold my-2 py-8 px-4 rounded shadow-lg text-lg"
               @click="save"
               :disabled="switchDisabled || listforms.length == 0 || loadingSave"

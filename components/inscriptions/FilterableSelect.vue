@@ -1,14 +1,5 @@
 <template>
   <div class="relative">
-    <!-- <input
-      type="text"
-      v-model="search"
-      placeholder="Selecciona tu iglesia..."
-      class="w-full p-2 mb-2 border border-gray-300 rounded"
-      @input="filterOptions"
-      @focus="showOptions = true"
-      @blur="hideOptions"
-    /> -->
     <input
       type="text"
       v-model="search"
@@ -42,6 +33,10 @@ const props = defineProps({
     type: Array,
     required: true,
   },
+  selectedId: {
+    type: Number,
+    default: null,
+  },
 });
 
 const search = ref("");
@@ -66,4 +61,19 @@ const hideOptions = () => {
     showOptions.value = false;
   }, 100); // Retraso para evitar que se cierre inmediatamente al hacer clic en una opción
 };
+
+// Busca y establece el valor inicial basado en el ID seleccionado
+watch(
+  () => props.selectedId,
+  (newId) => {
+    if (newId) {
+      const selectedOption = props.options.find((option) => option.id === newId);
+      if (selectedOption) {
+        search.value = selectedOption.description;
+      }
+    } else {
+      search.value = "";
+    }
+  }
+);
 </script>

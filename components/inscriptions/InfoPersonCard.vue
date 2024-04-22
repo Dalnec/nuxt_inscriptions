@@ -76,7 +76,7 @@ const deleteItem = (index: any) => {
         </CardDescription>
         <CardDescription v-if="props.mode == 'list'">
           <Icon name="teenyicons:church-solid" class="ms-auto h-4 w-4" />
-          {{ props.item.church }}
+          {{ props.getchurch(props.item) }}
         </CardDescription>
       </div>
     </CardHeader>
