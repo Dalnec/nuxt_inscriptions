@@ -123,6 +123,7 @@ const clearForm = () => {
   formdata.value = { ...defaultformdata.value };
   form.resetForm({ values: { ...formdata.value } });
   birthday.value = undefined;
+  changeDocumentLabel(formdata.value.documenttype_id);
 };
 
 const getPersonDni = async (dni: string) => {
@@ -384,22 +385,6 @@ const df = new DateFormatter("en-US");
       </FormItem>
     </FormField>
 
-    <!-- <FormField v-slot="{ componentField }" name="church">
-      <FormItem>
-        <FormLabel>IGLESIA</FormLabel>
-        <FormControl>
-          <Input
-            type="text"
-            placeholder="Iglesia"
-            v-bind="componentField"
-            v-model="formdata.church"
-            autocomplete="off"
-          />
-        </FormControl>
-        <FormDescription> Si es el caso. Ingresa nombre de la iglesia donde congregas </FormDescription>
-        <FormMessage />
-      </FormItem>
-    </FormField> -->
     <FormField name="church_id">
       <FormItem class="flex flex-col">
         <FormLabel>IGLESIA</FormLabel>
