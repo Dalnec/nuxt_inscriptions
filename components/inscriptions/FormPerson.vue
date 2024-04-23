@@ -44,6 +44,7 @@ const cardPersonalData = ref(false);
 const formPersonalData = ref(false);
 const pagedNavigation = ref(true);
 const birthday = ref();
+const errorMessage = ref("");
 
 watch(editDataForm, (editForm: any) => {
   console.log(editForm);
@@ -105,7 +106,7 @@ const formSchema = toTypedSchema(
     type_person: z.string({ required_error: "Campo requerido" }).min(1, {
       message: "Seleccione una opción",
     }),
-    // church: z.string({ required_error: "Campo requerido" }).min(1, {
+    // church_id: z.string({ required_error: "Campo requerido" }).min(1, {
     //   message: "Seleccione una opción",
     // }),
   })
@@ -156,56 +157,63 @@ const getPersonDni = async (dni: string) => {
 
 const onSubmit = form.handleSubmit(async () => {
   console.log(formdata.value);
-
-  let person: any = listforms.value.find((item) => item.doc_num == formdata.value.doc_num);
-  if (person) {
-    if (editing.value) {
-      person.doc_num = formdata.value.doc_num;
-      person.names = formdata.value.names;
-      person.lastnames = formdata.value.lastnames;
-      person.church_id = formdata.value.church_id;
-      person.birthday = formdata.value.birthday;
-      person.phone = formdata.value.phone;
-      person.gender = formdata.value.gender;
-      person.type_person = formdata.value.type_person;
-      person.mode = "list";
-      // console.log(person);
-      clearForm();
-      toast({
-        title: "INSCRIPCIÓN EDITADA",
-        description: "Cambios realizados con exito",
-        class: "bg-green-600 text-white py-3",
-        duration: 2000,
-      });
+  if (formdata.value.church_id) {
+    let person: any = listforms.value.find((item) => item.doc_num == formdata.value.doc_num);
+    if (person) {
+      if (editing.value) {
+        person.doc_num = formdata.value.doc_num;
+        person.names = formdata.value.names;
+        person.lastnames = formdata.value.lastnames;
+        person.church_id = formdata.value.church_id;
+        person.birthday = formdata.value.birthday;
+        person.phone = formdata.value.phone;
+        person.gender = formdata.value.gender;
+        person.type_person = formdata.value.type_person;
+        person.mode = "list";
+        // console.log(person);
+        clearForm();
+        toast({
+          title: "INSCRIPCIÓN EDITADA",
+          description: "Cambios realizados con exito",
+          class: "bg-green-600 text-white py-3",
+          duration: 2000,
+        });
+      } else {
+        toast({
+          title: "** Verifique el DNI ingresado! **",
+          description: "Una persona ya se encuentra registrada con este DNI.",
+          class: "bg-red-500 text-white font-bold py-3",
+          duration: 2000,
+        });
+      }
     } else {
       toast({
-        title: "** Verifique el DNI ingresado! **",
-        description: "Una persona ya se encuentra registrada con este DNI.",
-        class: "bg-red-500 text-white font-bold py-3",
-        duration: 2000,
+        title: "INSCRIPCIÓN AÑADIDA",
+        description: "Se añadio la inscripción con exito",
+        class: "bg-green-600 text-white py-3",
+        duration: 1800,
       });
+
+      setTimeout(() => {
+        listforms.value.push({ ...formdata.value });
+        clearForm();
+        props.open = !props.open;
+      }, 250);
     }
   } else {
-    toast({
-      title: "INSCRIPCIÓN AÑADIDA",
-      description: "Se añadio la inscripción con exito",
-      class: "bg-green-600 text-white py-3",
-      duration: 1800,
-    });
-
-    setTimeout(() => {
-      listforms.value.push({ ...formdata.value });
-      clearForm();
-      props.open = !props.open;
-    }, 250);
+    errorMessage.value = "Seleccione una iglesia";
   }
 });
 
 const handleSelect = (option: any) => {
-  formdata.value.church_id = option.id;
+  if (option) {
+    formdata.value.church_id = option.id;
+    errorMessage.value = "";
+  } else {
+    errorMessage.value = "Seleccione una iglesia";
+    formdata.value.church_id = null;
+  }
 };
-
-const df = new DateFormatter("en-US");
 </script>
 
 <template>
@@ -387,8 +395,13 @@ const df = new DateFormatter("en-US");
 
     <FormField name="church_id">
       <FormItem class="flex flex-col">
-        <FormLabel>IGLESIA</FormLabel>
-        <InscriptionsFilterableSelect :options="churches" @select="handleSelect" :selectedId="formdata.church_id" />
+        <FormLabel :class="{ 'text-destructive': errorMessage ? true : false }">IGLESIA</FormLabel>
+        <InscriptionsFilterableSelect
+          :options="churches"
+          @select="handleSelect"
+          :selectedId="formdata.church_id"
+          :errorMessage="errorMessage"
+        />
         <FormDescription> Si es el caso. Ingresa nombre de la iglesia donde congregas. </FormDescription>
       </FormItem>
     </FormField>

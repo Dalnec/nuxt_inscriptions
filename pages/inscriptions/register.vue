@@ -178,7 +178,8 @@ const save = async () => {
               Ver Lista
             </Button>
             <div>
-              <InscriptionsSheetPersons v-if="listforms.length > 0" :props="propsSheet" />
+              <!-- <InscriptionsSheetPersons v-if="listforms.length > 0" :props="propsSheet" /> -->
+              <InscriptionsSheetPersons :props="propsSheet" />
             </div>
             <Button
               v-show="listforms.length > 0 && showpayment"

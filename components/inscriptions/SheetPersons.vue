@@ -23,17 +23,8 @@ const getChurchDescription = (item: any) => {
 
 <template>
   <div>
-    <Sheet
-      v-show="$route.query.group && props.listforms.length > 0"
-      :open="props.open"
-      :onUpdate:open="
-        (value) => {
-          console.log(value);
-
-          props.open = !props.open;
-        }
-      "
-    >
+    <!-- v-show="$route.query.group && props.listforms.length > 0" -->
+    <Sheet :open="props.open" @update:open="(value) => (props.open = value)">
       <!-- :onUpdate:open="props.openChange(props.open)" -->
       <SheetContent class="flex flex-col min-h-screen w-[400px] sm:w-[540px] p-5 max-h-full">
         <SheetHeader class="gap-0">

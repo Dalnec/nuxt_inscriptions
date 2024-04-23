@@ -9,6 +9,7 @@
       @focus="showOptions = true"
       @blur="hideOptions"
     />
+    <div v-if="errorMessage" class="text-sm font-medium text-destructive">{{ errorMessage }}</div>
     <ul
       v-if="showOptions && filteredOptions.length"
       class="absolute left-0 w-full mt-1 bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-auto"
@@ -37,6 +38,10 @@ const props = defineProps({
     type: Number,
     default: null,
   },
+  errorMessage: {
+    type: String,
+    default: null,
+  },
 });
 
 const search = ref("");
@@ -47,7 +52,10 @@ const filteredOptions = computed(() =>
 const showOptions = ref(false);
 
 const filterOptions = () => {
-  // La lógica de filtrado se maneja automáticamente a través de la propiedad computada
+  if (search.value.length == 0) {
+    console.log("empty");
+    emit("select", null);
+  }
 };
 
 const selectOption = (option) => {
