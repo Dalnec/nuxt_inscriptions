@@ -26,17 +26,8 @@ async function searchUsers(searchTerm: any, take: number, skip: number) {
 router.get(
   "/list",
   defineEventHandler(async (event) => {
-    // const users = await prisma.user.findMany({});
-    // if (users) {
-    //   return users;
-    // }
     const { search, take, skip } = getQuery(event);
-
     return await searchUsers(search, +take, +skip);
-    // throw createError({
-    //   statusCode: 404,
-    //   statusMessage: "No valid value",
-    // });
   })
 );
 
@@ -55,6 +46,28 @@ router.get(
 );
 
 router.post(
+  "/email",
+  defineEventHandler(async (event) => {
+    const body = await readBody(event);
+    console.log("body", body);
+
+    if (body) {
+      return await prisma.user.findUnique({
+        where: { email: body.email },
+        include: {
+          profile: true,
+        },
+      });
+    }
+
+    throw createError({
+      statusCode: 404,
+      statusMessage: "No valid value",
+    });
+  })
+);
+
+router.post(
   "/create",
   defineEventHandler(async (event) => {
     const body = await readBody(event);
@@ -64,7 +77,7 @@ router.post(
           ...body,
         },
       });
-      return { success: true, message: "Inscripcion(es) guardada(s)", data: newUser };
+      return { success: true, message: "User created!", data: newUser };
     }
 
     throw createError({
@@ -80,12 +93,31 @@ router.put(
     const id = Number(getRouterParam(event, "id"));
     const body = await readBody(event);
     if (body) {
-      return await prisma.person.update({
+      const res = await prisma.user.update({
         where: { id },
         data: {
           ...body,
         },
       });
+      return { success: true, data: res };
+    }
+
+    throw createError({
+      statusCode: 404,
+      // statusMessage: "No valid value",
+    });
+  })
+);
+
+router.delete(
+  "/:id",
+  defineEventHandler(async (event) => {
+    const id = Number(getRouterParam(event, "id"));
+    if (id) {
+      const res = await prisma.user.delete({
+        where: { id },
+      });
+      return { success: true, data: res };
     }
 
     throw createError({

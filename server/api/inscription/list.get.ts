@@ -2,6 +2,10 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+function formatDate(date) {
+  return new Date(date).toISOString().substring(0, 10);
+}
+
 async function searchInscriptions(searchTerm: any, take: number, skip: number) {
   // Definir el filtro de búsqueda
   const filters = [
@@ -23,7 +27,13 @@ async function searchInscriptions(searchTerm: any, take: number, skip: number) {
     },
   });
 
-  return { count, results };
+  // Formatear la fecha de cada post
+  const formattedResults = results.map((result) => ({
+    ...result,
+    person: { ...result.person, birthday: formatDate(result.person.birthday) },
+  }));
+
+  return { count, results: formattedResults };
 }
 
 export default defineEventHandler(async (event) => {

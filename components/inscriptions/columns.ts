@@ -5,6 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import DropdownAction from "./DataTableDropDown.vue";
+import DialogFormPerson from "./DialogFormPerson.vue";
 import DialogAction from "./DialogImgViewer.vue";
 
 export interface PersonInscription {
@@ -158,65 +159,71 @@ export const columns = [
     cell: ({ row, table }) => {
       // const inscription = row.original;
 
-      return h(
-        "div",
-        { class: "relative" },
+      return h("div", { class: "flex justify-center items-center" }, [
+        h(DialogFormPerson, {
+          props: {
+            inscription: row.original,
+            reload: table.options.meta.reload,
+            churches: table.options.meta.churches,
+            documentTypes: table.options.meta.documentTypes,
+          },
+        }),
         h(DropdownAction, {
           props: { inscription: row.original, reload: table.options.meta.reload },
-        })
-      );
+        }),
+      ]);
     },
   }),
 ];
 
 // EJEMPLO
-export const columnsExample = [
-  columnHelper.display({
-    id: "select",
-    header: ({ table }) =>
-      h(Checkbox, {
-        checked: table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate"),
-        "onUpdate:checked": (value) => table.toggleAllPageRowsSelected(!!value),
-        ariaLabel: "Select all",
-      }),
-    cell: ({ row }) => {
-      return h(Checkbox, {
-        checked: row.getIsSelected(),
-        "onUpdate:checked": (value) => row.toggleSelected(!!value),
-        ariaLabel: "Select row",
-      });
-    },
-    enableSorting: false,
-    enableHiding: false,
-  }),
+// export const columnsExample = [
+//   columnHelper.display({
+//     id: "select",
+//     header: ({ table }) =>
+//       h(Checkbox, {
+//         checked: table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate"),
+//         "onUpdate:checked": (value) => table.toggleAllPageRowsSelected(!!value),
+//         ariaLabel: "Select all",
+//       }),
+//     cell: ({ row }) => {
+//       return h(Checkbox, {
+//         checked: row.getIsSelected(),
+//         "onUpdate:checked": (value) => row.toggleSelected(!!value),
+//         ariaLabel: "Select row",
+//       });
+//     },
+//     enableSorting: false,
+//     enableHiding: false,
+//   }),
 
-  columnHelper.accessor("amount", {
-    header: () => h("div", { class: "text-right" }, "MONTO"),
-    cell: ({ row }) => {
-      const amount = Number.parseFloat(row.getValue("amount"));
+//   columnHelper.accessor("amount", {
+//     header: () => h("div", { class: "text-right" }, "MONTO"),
+//     cell: ({ row }) => {
+//       const amount = Number.parseFloat(row.getValue("amount"));
 
-      return h("div", { class: "text-right font-medium" }, () => amount.toFixed(2));
-    },
-  }),
+//       return h("div", { class: "text-right font-medium" }, () => amount.toFixed(2));
+//     },
+//   }),
 
-  columnHelper.display({
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
+//   columnHelper.display({
+//     id: "actions",
+//     enableHiding: false,
+//     cell: ({ row }) => {
+//       const payment = row.original;
 
-      return h(
-        "div",
-        {
-          class: "relative",
-        },
-        h(DropdownAction, {
-          inscription: row.original,
-        })
-      );
-    },
-  }),
-];
+//       return h(
+//         "div",
+//         {
+//           class: "relative",
+//         },
+//         h(DropdownAction, {
+//           inscription: row.original,
+//         })
+//       );
+//     },
+//   }),
+// ];
 
 // export const columns: ColumnDef<Payment>[] = [
 //   {

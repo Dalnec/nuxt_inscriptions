@@ -9,6 +9,9 @@
       @focus="showOptions = true"
       @blur="hideOptions"
     />
+    <button @click.prevent="clearInput" class="absolute right-2 top-2 p-1 text-sm text-gray-500 hover:text-gray-700">
+      Limpiar
+    </button>
     <div v-if="errorMessage" class="text-sm font-medium text-destructive">{{ errorMessage }}</div>
     <ul
       v-if="showOptions && filteredOptions.length"
@@ -68,6 +71,11 @@ const hideOptions = () => {
   setTimeout(() => {
     showOptions.value = false;
   }, 100); // Retraso para evitar que se cierre inmediatamente al hacer clic en una opción
+};
+
+const clearInput = () => {
+  search.value = ""; // Limpia el valor del campo de entrada
+  emit("select", null); // Emite un evento para indicar que no se ha seleccionado ninguna opción
 };
 
 // Busca y establece el valor inicial basado en el ID seleccionado

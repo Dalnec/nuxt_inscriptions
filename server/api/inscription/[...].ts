@@ -236,4 +236,23 @@ router.put(
     });
   })
 );
+
+router.delete(
+  "/:id",
+  defineEventHandler(async (event) => {
+    const id = Number(getRouterParam(event, "id"));
+    if (id) {
+      const deleted = await prisma.inscription.delete({
+        where: { id },
+      });
+      return { success: true, data: deleted };
+    }
+
+    throw createError({
+      statusCode: 404,
+      statusMessage: "No valid value",
+    });
+  })
+);
+
 export default useBase("/api/inscription", router.handler);

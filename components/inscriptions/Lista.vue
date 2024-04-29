@@ -10,8 +10,15 @@ const data = ref({
   results: [],
 });
 const searchInput = ref("");
-const currentPage = ref(1); // Ejemplo de página actual
+const currentPage = ref(1);
 const pending = ref(false);
+
+const { pending: ch_pending, data: churches } = await useFetch("/api/person/churches", {
+  lazy: false,
+});
+const { pending: dt_pending, data: documentTypes } = await useFetch("/api/person/documenttypes", {
+  lazy: false,
+});
 
 const loadData = async () => {
   pending.value = true;
@@ -19,8 +26,6 @@ const loadData = async () => {
     params: { search: search.value, take: 20, skip: (currentPage.value - 1) * 20 },
   });
   console.log(res);
-  // data.value = { results: res.results.map((r) => ({ ...r, reload: loadData })), count: res.count };
-  // console.log("data", data.value);
   data.value = res;
   pending.value = false;
 };
@@ -29,18 +34,14 @@ const changePage = async (newPage: any) => {
   currentPage.value = newPage;
   console.log("currentPage", currentPage.value);
   await loadData();
-  // refresh();
 };
-
-// const { pending, data, refresh, error } = useFetch("/api/inscription/list", {
-//   lazy: false,
-//   params: { search, take: 20, skip: (currentPage.value - 1) * 20 },
-// });
 
 const tableprops = ref({
   tablependieng: pending,
   // tablerefresh: refresh,
   tablerefresh: loadData,
+  churches,
+  documentTypes,
 });
 
 const searchInscription = async () => {
@@ -65,12 +66,22 @@ onMounted(async () => {
         v-model="searchInput"
         @keydown.enter="searchInscription"
       />
-      <!-- @input="searchInscription" -->
+      <button
+        @click.prevent="
+          () => {
+            searchInput = '';
+            currentPage = 1;
+            loadData();
+          }
+        "
+        class="absolute right-2 top-2 p-1 text-sm text-gray-500 hover:text-gray-700"
+      >
+        Limpiar
+      </button>
       <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
         <Icon name="material-symbols:search" class="h-5 w-5 opacity-80" />
       </span>
     </div>
-    <!-- <Button @click="refresh" variant="outline" class="text-violet-600 border-violet-600"> -->
     <Button
       @click.prevent="
         searchInput = '';

@@ -94,15 +94,25 @@ router.get(
 router.put(
   "/:id",
   defineEventHandler(async (event) => {
+    const typePerson = {
+      P: "PASTOR",
+      M: "MIEMBROACTIVO",
+      I: "INVITADO",
+    };
     const id = Number(getRouterParam(event, "id"));
     const body = await readBody(event);
+    delete body.id;
+    delete body.mode;
     if (body) {
-      return await prisma.person.update({
+      const res = await prisma.person.update({
         where: { id },
         data: {
           ...body,
+          birthday: new Date(body.birthday).toISOString(),
+          type_person: typePerson[body.type_person],
         },
       });
+      return { success: true, data: res };
     }
 
     throw createError({

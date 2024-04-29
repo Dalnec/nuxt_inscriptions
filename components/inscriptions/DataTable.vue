@@ -29,6 +29,9 @@ const table = useVueTable({
   },
   meta: {
     reload: () => props.tableprops.tablerefresh(),
+    churches: () => props.tableprops.churches,
+    documentTypes: () => props.tableprops.documentTypes,
+    profiles: props.tableprops.profiles,
   },
 });
 </script>

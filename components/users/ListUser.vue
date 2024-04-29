@@ -4,6 +4,7 @@ import { columns } from "./columns";
 import DataTable from "../inscriptions/DataTable.vue";
 import ListaPagination from "../inscriptions/ListaPagination.vue";
 
+const useuserinfo = useUserInfo();
 const search = ref("");
 const data = ref({
   count: 0,
@@ -24,21 +25,11 @@ const loadData = async () => {
   pending.value = false;
 };
 
-// const { pending: p_pending, data: profiles } = await useFetch("/api/user/profiles", {
-//   lazy: false,
-// });
-
 const changePage = async (newPage: any) => {
   currentPage.value = newPage;
   console.log("currentPage", currentPage.value);
   await loadData();
 };
-
-const tableprops = ref({
-  tablependieng: pending,
-  // tablerefresh: refresh,
-  tablerefresh: loadData,
-});
 
 const searchInscription = async () => {
   search.value = searchInput.value;
@@ -46,9 +37,20 @@ const searchInscription = async () => {
   await loadData();
 };
 
+profiles.value = await $fetch("/api/user/profiles");
+
 onMounted(async () => {
   await loadData();
-  profiles.value = await $fetch("/api/user/profiles");
+  // console.log("*****", useuserinfo.value);
+  // if (useuserinfo.value.profile.description != "root" && useuserinfo.value.profile.description != "ADMINISTRADOR") {
+  //   await navigateTo("/login");
+  // }
+});
+
+const tableprops = ref({
+  tablependieng: pending,
+  tablerefresh: loadData,
+  profiles: profiles.value,
 });
 </script>
 

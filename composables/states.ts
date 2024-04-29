@@ -1,3 +1,4 @@
 export const useListForms = () => useState("listforms", () => []);
 export const useForms = () => useState("forms", () => {});
 export const useLoading = () => useState<boolean>("loading", () => false);
+export const useUserInfo = () => useState("user", () => {});

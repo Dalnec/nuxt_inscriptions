@@ -3,6 +3,8 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 const churches_data = [
+  { description: "Ninguna" },
+  { description: "Otra" },
   { description: "Aguas Claras" },
   { description: "Aguas Verdes" },
   { description: "Alfarillo" },
@@ -117,7 +119,12 @@ const documenttype_data = [
   { id: "4", description: "CI", active: true },
   { id: "7", description: "PASAPORTE", active: true },
 ];
-const profile_data = [{ description: "ADMINISTRADOR" }, { description: "STAFF" }, { description: "PERSONA" }];
+const profile_data = [
+  { description: "root" },
+  { description: "ADMINISTRADOR" },
+  { description: "STAFF" },
+  { description: "PERSONA" },
+];
 async function main() {
   await prisma.paymentMethod.createMany({
     data: paymentmethod_data,
