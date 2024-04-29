@@ -49,8 +49,6 @@ router.post(
   "/email",
   defineEventHandler(async (event) => {
     const body = await readBody(event);
-    console.log("body", body);
-
     if (body) {
       return await prisma.user.findUnique({
         where: { email: body.email },
