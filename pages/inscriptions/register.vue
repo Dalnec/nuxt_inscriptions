@@ -157,7 +157,7 @@ const save = async () => {
     <ClientOnly>
       <LoadingView v-if="useloading" />
       <div class="w-full flex justify-center">
-        <div v-if="dt_pending || pm_pending" class="flex justify-center h-100">Cargando...</div>
+        <div v-if="dt_pending || pm_pending || ch_pending" class="flex justify-center h-100">Cargando...</div>
         <Card class="w-full md:w-1/2 lg:w-2/5">
           <CardHeader>
             <CardTitle>FORMULARIO DE INSCRIPCION</CardTitle>
