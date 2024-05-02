@@ -237,6 +237,34 @@ router.put(
   })
 );
 
+router.put(
+  "/confirmAttendance/:id",
+  defineEventHandler(async (event) => {
+    const id = Number(getRouterParam(event, "id"));
+    const body = await readBody(event);
+    if (body) {
+      const toupdate = await prisma.inscription.findUniqueOrThrow({
+        where: { id },
+      });
+      if (toupdate.status !== body.status) {
+        const updateddata = await prisma.inscription.update({
+          where: { id },
+          data: {
+            ...body,
+          },
+        });
+        return { success: true, data: updateddata };
+      }
+      return { success: true, data: toupdate };
+    }
+
+    throw createError({
+      statusCode: 404,
+      statusMessage: "No valid value",
+    });
+  })
+);
+
 router.delete(
   "/:id",
   defineEventHandler(async (event) => {
@@ -252,6 +280,54 @@ router.delete(
       statusCode: 404,
       statusMessage: "No valid value",
     });
+  })
+);
+
+function formatDate(date) {
+  return new Date(date).toISOString().substring(0, 10);
+}
+
+async function searchInscriptions(searchTerm: any, take: number, skip: number) {
+  // Definir el filtro de búsqueda
+  const filters = [
+    { vouchergroup: { contains: searchTerm, mode: "insensitive" } },
+    { person: { doc_num: { contains: searchTerm } } },
+    { person: { names: { contains: searchTerm, mode: "insensitive" } } },
+    { person: { lastnames: { contains: searchTerm, mode: "insensitive" } } },
+  ];
+
+  const count = await prisma.inscription.count({ where: { NOT: { status: { equals: "PENDIENTE" } }, OR: filters } });
+  const results = await prisma.inscription.findMany({
+    take,
+    skip,
+    where: { NOT: { status: { equals: "PENDIENTE" } }, OR: filters },
+    orderBy: [{ id: "desc" }],
+    include: {
+      person: {
+        include: {
+          church: true,
+          documenttype: true,
+          user: true,
+        },
+      },
+      paymentmethod: true,
+    },
+  });
+
+  // Formatear la fecha de cada post
+  const formattedResults = results.map((result) => ({
+    ...result,
+    person: { ...result.person, birthday: formatDate(result.person.birthday) },
+  }));
+
+  return { count, results: formattedResults };
+}
+
+router.get(
+  "/toattend",
+  defineEventHandler(async (event) => {
+    const { search, take, skip } = getQuery(event);
+    return await searchInscriptions(search, +take, +skip);
   })
 );
 

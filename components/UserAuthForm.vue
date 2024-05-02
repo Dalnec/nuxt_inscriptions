@@ -26,7 +26,31 @@ async function login(event: Event) {
     isLoading.value = false;
     return;
   }
-  navigateTo("/inscriptions/list");
+  const useuserinfo = useUserInfo();
+  console.log(useuserinfo.value);
+  if (!useuserinfo.value) {
+    useuserinfo.value = await $fetch("/api/user/email", {
+      method: "POST",
+      body: { email: data.value.email },
+    });
+  }
+
+  switch (useuserinfo.value.profile.description) {
+    case "ADMINISTRADOR":
+      navigateTo("/inscriptions/list");
+      break;
+    case "STAFF":
+      navigateTo("/inscriptions/list");
+      break;
+    case "PERSONA":
+      navigateTo("/attendance");
+      break;
+    case "root":
+      navigateTo("/users/list");
+      break;
+    default:
+      navigateTo("/");
+  }
 
   setTimeout(() => {
     isLoading.value = false;

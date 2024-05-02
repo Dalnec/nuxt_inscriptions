@@ -22,7 +22,13 @@ async function searchInscriptions(searchTerm: any, take: number, skip: number) {
     where: { OR: filters },
     orderBy: [{ id: "desc" }],
     include: {
-      person: true,
+      person: {
+        include: {
+          church: true,
+          documenttype: true,
+          user: true,
+        },
+      },
       paymentmethod: true,
     },
   });

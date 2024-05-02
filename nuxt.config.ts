@@ -22,6 +22,7 @@ export default defineNuxtConfig({
     componentDir: "./components/ui",
   },
   devtools: { enabled: true },
+  ignore: ["pages/signup.vue"],
   alias: {
     "@": resolve(__dirname, "./"),
   },

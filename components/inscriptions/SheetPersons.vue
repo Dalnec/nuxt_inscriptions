@@ -15,8 +15,6 @@ const deleteItem = (index: any) => {
 };
 
 const getChurchDescription = (item: any) => {
-  console.log(item);
-
   return props.churches.find((c: any) => c.id == item.church_id)?.description;
 };
 </script>
