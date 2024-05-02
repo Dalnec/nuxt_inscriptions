@@ -9,11 +9,11 @@ async function searchUsers(searchTerm: any, take: number, skip: number) {
     { name: { contains: searchTerm, mode: "insensitive" } },
   ];
 
-  const count = await prisma.user.count({ where: { OR: filters } });
+  const count = await prisma.user.count({ where: { NOT: { id: 1 }, OR: filters } });
   const results = await prisma.user.findMany({
     take,
     skip,
-    where: { OR: filters },
+    where: { NOT: { id: 1 }, OR: filters },
     orderBy: [{ id: "desc" }],
     include: {
       profile: true,
