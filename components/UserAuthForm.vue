@@ -31,7 +31,7 @@ async function login(event: Event) {
   if (!useuserinfo.value) {
     useuserinfo.value = await $fetch("/api/user/email", {
       method: "POST",
-      body: { email: data.value.email },
+      body: { email: data.value.user.email },
     });
   }
 
