@@ -1,4 +1,13 @@
 <script setup lang="ts">
+definePageMeta({
+  middleware: function (to, from) {
+    const user = useUserInfo();
+    console.log(user.value.profile.description);
+    if (user.value.profile.description != "PERSONA") {
+      return navigateTo("/attendance");
+    }
+  },
+});
 import { ref, onMounted } from "vue";
 import { columns } from "./columns";
 import DataTable from "./DataTable.vue";

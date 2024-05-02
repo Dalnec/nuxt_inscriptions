@@ -53,6 +53,11 @@
               <NuxtLink
                 :to="$route.name == 'index' ? '#home-section' : '/'"
                 class="block py-2 px-3 md:p-0 text-white shadow-lg shadow-violet-600/{{selected=='home'?'100':'50'}} rounded md:bg-transparent hover:shadow-violet-600/100 hover:brightness-110"
+                @click.prevent="
+                  () => {
+                    if (width < 768) showBurgerMenu = false;
+                  }
+                "
               >
                 <!-- class="border-2 text-violet-300 border-violet-300/100 text-white font-bold py-2 px-4 rounded shadow-md shadow-violet-600/100 duration-500 transition ease-out scale-100 hover:scale-110" -->
                 PRINCIPAL
@@ -62,6 +67,11 @@
               <NuxtLink
                 to="#contactus-section"
                 class="block py-2 px-3 md:p-0 text-white shadow-lg shadow-violet-600/{{selected=='contactus'?'100':'50'}} rounded md:bg-transparent hover:shadow-violet-600/100 hover:brightness-110"
+                @click.prevent="
+                  () => {
+                    if (width < 768) showBurgerMenu = false;
+                  }
+                "
               >
                 CONTÁCTANOS
               </NuxtLink>
@@ -74,7 +84,17 @@
 </template>
 
 <script setup lang="ts">
+import { useWindowSize } from "@vueuse/core";
 import { ref } from "vue";
-const showBurgerMenu = ref(true);
-const selected = ref("home");
+
+const { width, height } = useWindowSize();
+const showBurgerMenu = ref(width.value < 768 ? false : true);
+
+watch(width, (newwidth) => {
+  if (width.value < 768) {
+    showBurgerMenu.value = false;
+  } else {
+    showBurgerMenu.value = true;
+  }
+});
 </script>

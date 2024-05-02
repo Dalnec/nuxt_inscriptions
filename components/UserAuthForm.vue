@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 import { toast } from "@/components/ui/toast";
 
 const supabase = useSupabaseClient();
+const useuserinfo = useUserInfo();
+
 const credentials = reactive({ email: "", password: "" });
 const isLoading = ref(false);
 
@@ -12,7 +14,6 @@ async function login(event: Event) {
   isLoading.value = true;
   // const { data, error } = await supabase.auth.signUp(credentials);
   const { data, error } = await supabase.auth.signInWithPassword(credentials);
-  console.log(data);
 
   if (error) {
     console.error(error);
@@ -26,14 +27,10 @@ async function login(event: Event) {
     isLoading.value = false;
     return;
   }
-  const useuserinfo = useUserInfo();
-  console.log(useuserinfo.value);
-  if (!useuserinfo.value) {
-    useuserinfo.value = await $fetch("/api/user/email", {
-      method: "POST",
-      body: { email: data.value.user.email },
-    });
-  }
+  useuserinfo.value = await $fetch("/api/user/email", {
+    method: "POST",
+    body: { email: data.user.email },
+  });
 
   switch (useuserinfo.value.profile.description) {
     case "ADMINISTRADOR":
@@ -46,7 +43,7 @@ async function login(event: Event) {
       navigateTo("/attendance");
       break;
     case "root":
-      navigateTo("/users/list");
+      navigateTo("/users");
       break;
     default:
       navigateTo("/");
