@@ -10,54 +10,6 @@ const prisma = new PrismaClient();
 router.post(
   "/create",
   defineEventHandler(async (event) => {
-    // try {
-    // const formdata = await readMultipartFormData(event);
-    // const data: Person = {
-    //   doc_num: "",
-    //   names: "",
-    //   lastnames: "",
-    //   church: "",
-    //   birthday: new Date(),
-    //   paymentmethod: "",
-    //   phone: "",
-    //   gender: "",
-    // };
-    // let file: any;
-    // formdata?.forEach((value: any) => {
-    //   if (value.name && value.data) {
-    //     if (value.name == "file") {
-    //       file = value;
-    //     } else {
-    //       data[value.name] = value.data.toString("utf8");
-    //     }
-    //   }
-    // });
-    // const namefile = `${data.paymentmethod}_${data.doc_num}.${file.filename.split(".").pop()}`;
-    // const path = `./public/uploads/${namefile}`;
-    // await writeFile(path, file.data);
-
-    // const new_data = await prisma.person.create({
-    //   data: {
-    //     doc_num: data.doc_num,
-    //     names: data.names,
-    //     lastnames: data.lastnames,
-    //     church: data.church,
-    //     birthday: new Date(data.birthday).toISOString(),
-    //     phone: data.phone,
-    //     gender: data.gender,
-    //     Inscription: {
-    //       create: [
-    //         {
-    //           assignedBy: data.doc_num,
-    //           voucherpath: namefile,
-    //           paymentMethodId: 1,
-    //         },
-    //       ],
-    //     },
-    //   },
-    // });
-    // Parse the multipart form data
-
     const nanoid = customAlphabet("1234567890abcdef", 10);
     const groupcode = nanoid(5);
     const imgcode = nanoid();
