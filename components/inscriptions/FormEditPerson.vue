@@ -47,6 +47,8 @@ const set_type_person = (tipo) => {
   switch (tipo) {
     case "PASTOR":
       return "P";
+    case "LIDER":
+      return "L";
     case "MIEMBROACTIVO":
       return "M";
     case "INVITADO":
@@ -347,6 +349,12 @@ const handleSelect = (option: any) => {
                 <RadioGroupItem value="P" />
               </FormControl>
               <FormLabel class="font-normal"> Pastor </FormLabel>
+            </FormItem>
+            <FormItem class="flex items-center space-y-0 gap-x-3">
+              <FormControl>
+                <RadioGroupItem value="L" />
+              </FormControl>
+              <FormLabel class="font-normal"> Líder </FormLabel>
             </FormItem>
             <FormItem class="flex items-center space-y-0 gap-x-3">
               <FormControl>

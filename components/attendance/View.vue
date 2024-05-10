@@ -36,7 +36,7 @@
     <CardView
       v-for="(item, index) in data.results"
       :key="item.doc_num"
-      :props="{ item, index, changestatus: confirmAttendance, reload: loadData }"
+      :props="{ item, index, changestatus: confirmAttendance, reload: loadData, userinfo: useuserinfo }"
     />
   </div>
 </template>
@@ -45,17 +45,19 @@
 import CardView from "./CardView.vue";
 
 const useloading = useLoading();
-const data = ref([]);
+const data = ref({});
 const pending = ref(false);
 const search = ref("");
+const useuserinfo = useUserInfo();
 
 const loadData = async () => {
+  data.value = {};
   useloading.value = true;
   pending.value = true;
   const res = await $fetch("/api/inscription/toattend", {
     params: { search: search.value, take: 100, skip: 0 },
   });
-  console.log(res);
+  // console.log(res);
   data.value = res;
   setTimeout(() => {
     pending.value = false;
@@ -70,7 +72,7 @@ const confirmAttendance = async (id, status) => {
     method: "PUT",
     body: { status },
   });
-  console.log(res);
+  // console.log(res);
   setTimeout(() => {
     pending.value = false;
     useloading.value = false;

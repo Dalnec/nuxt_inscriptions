@@ -26,6 +26,15 @@ const form = useForm({
 onMounted(() => {
   paymentsMethods.value = false ? props.paymentsMethods : props.paymentsMethods.filter((p: any) => p.id != 1);
 });
+// onMounted(() => {
+//   paymentsMethods.value =
+//     props.userinfo &&
+//     (props.userinfo.profile.description == "root" ||
+//       props.userinfo.profile.description == "ADMINISTRADOR" ||
+//       props.userinfo.profile.description == "STAFF")
+//       ? props.paymentsMethods
+//       : props.paymentsMethods.filter((p: any) => p.id != 1);
+// });
 
 const imagePreview = ref();
 
@@ -33,8 +42,13 @@ watch(imagePreview, (img: any) => {
   if (img && formdata.value.file.length > 0) {
     props.disabledSend(false);
   } else {
-    props.disabledSend(true);
-    imagePreview.value = undefined;
+    if (formdata.value.paymentmethod == "1") {
+      props.disabledSend(false);
+    } else {
+      console.log(formdata.value.paymentmethod);
+      props.disabledSend(true);
+      imagePreview.value = undefined;
+    }
   }
 });
 
@@ -139,6 +153,11 @@ const totalToPay = computed(() => {
                 @click="
                   () => {
                     formdata.paymentmethod = '' + item.id;
+                    if (formdata.paymentmethod == '1') {
+                      imagePreview = null;
+                    } else {
+                      imagePreview = undefined;
+                    }
                   }
                 "
               >

@@ -38,6 +38,7 @@ model DocumentType {
 
 enum TypePerson {
   PASTOR        @map("P")
+  LIDER         @map("L")
   MIEMBROACTIVO @map("M")
   INVITADO      @map("I")
 }

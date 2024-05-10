@@ -2,6 +2,7 @@
 import { toast } from "@/components/ui/toast";
 definePageMeta({
   layout: "registration",
+  middleware: "inscriptionauth",
 });
 
 const { pending: ch_pending, data: churches } = await useFetch("/api/person/churches", {
@@ -21,6 +22,7 @@ const loadingSave = ref(false);
 
 const listforms = useListForms();
 const useloading = useLoading();
+const useuserinfo = useUserInfo();
 
 const changeLoadingRegister = () => {
   loadingRegister.value = true;
@@ -34,6 +36,7 @@ const changeView = (state) => {
 };
 
 const disabledSend = (state = true) => {
+  console.log("disabledSend", state);
   switchDisabled.value = state;
 };
 
@@ -65,6 +68,7 @@ const propsFormPayment = ref({
     amount: 0,
     file: [],
   },
+  userinfo: useuserinfo.value,
 });
 
 const clearData = () => {
@@ -96,8 +100,8 @@ const save = async () => {
   const dataform = { persons: [...listforms.value], payment: { ...propsFormPayment.value.paymentForm } };
   if (dataform.persons.length > 0) {
     if (dataform.payment.paymentmethod) {
-      if (dataform.payment.file.length > 0) {
-        if (dataform.payment.voucher) {
+      if (dataform.payment.paymentmethod != "1" || dataform.payment.file.length > 0) {
+        if (dataform.payment.paymentmethod != "1" || dataform.payment.voucher) {
           try {
             const formData = new FormData();
             const files = dataform.payment.file;
@@ -106,8 +110,10 @@ const save = async () => {
             formData.append("payment", JSON.stringify(dataform.payment.paymentmethod));
             formData.append("amount", JSON.stringify(dataform.payment.amount));
 
-            for (let i = 0; i < files.length; i++) {
-              formData.append("file", files[i]);
+            if (dataform.payment.paymentmethod != "1") {
+              for (let i = 0; i < files.length; i++) {
+                formData.append("file", files[i]);
+              }
             }
 
             const res = await $fetch("/api/inscription/create", {

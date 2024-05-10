@@ -96,6 +96,7 @@ router.put(
   defineEventHandler(async (event) => {
     const typePerson = {
       P: "PASTOR",
+      L: "LIDER",
       M: "MIEMBROACTIVO",
       I: "INVITADO",
     };

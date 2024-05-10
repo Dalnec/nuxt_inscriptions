@@ -7,6 +7,7 @@ const { props = {} } = defineProps(["props"]);
 
 const persontype: any = {
   PASTOR: "PASTOR",
+  LIDER: "LIDER",
   MIEMBROACTIVO: "MIEMBRO ACTIVO",
   INVITADO: "INVITADO",
 };
@@ -14,7 +15,7 @@ const persontype: any = {
 const confirmAttendance = async () => {
   if (props.item.status == "CONFIRMADO") {
     const res = await props.changestatus(props.item.id, "REGISTRADO");
-    console.log(res);
+    // console.log(res);
 
     if (!res.success) {
       toast({
@@ -32,9 +33,16 @@ const confirmAttendance = async () => {
       duration: 3000,
     });
   } else {
-    const res = await props.changestatus(props.item.id, "CONFIRMADO");
-    console.log(res);
-    props.item.status = "CONFIRMADO";
+    if (props.userinfo.profile.description == "root" || props.userinfo.profile.description == "ADMINISTRADOR") {
+      const res = await props.changestatus(props.item.id, "CONFIRMADO");
+      props.item.status = "CONFIRMADO";
+    } else {
+      toast({
+        title: "Comuniquese con el Administrador!",
+        class: "bg-amber-600 text-white py-3 border-amber-600",
+        duration: 3000,
+      });
+    }
   }
 };
 </script>

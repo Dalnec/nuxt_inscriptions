@@ -7,6 +7,7 @@ const { props = {} } = defineProps(["props"]);
 
 const persontype: any = {
   P: "PASTOR",
+  L: "LIDER",
   M: "MIEMBRO ACTIVO",
   I: "INVITADO",
 };

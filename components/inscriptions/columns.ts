@@ -33,11 +33,16 @@ export interface PersonInscription {
     birthday: Date;
     phone: string | null;
     email: string | null;
-    church: string | null;
+    church_id: string | null;
     type: string | null;
     status: boolean | null;
     documenttype_id: number | null;
     userId: number | null;
+    church: {
+      id: number;
+      description: string;
+      active: boolean;
+    };
   };
   paymentmethod: {
     id: number;
@@ -61,15 +66,18 @@ const setClassBadge = (status: PersonInscription["status"]) => {
 const columnHelper = createColumnHelper<PersonInscription>();
 
 export const columns = [
-  columnHelper.accessor("person", {
-    header: "DNI",
-    cell: ({ row }) => h("div", { class: "flex justify-center" }, row.getValue("person").doc_num),
-  }),
+  // columnHelper.accessor("person", {
+  //   header: "DNI",
+  //   cell: ({ row }) => h("div", { class: "flex justify-center" }, row.getValue("person").doc_num),
+  // }),
 
   columnHelper.accessor("person", {
-    header: "NOMBRES",
+    header: "DNI/NOMBRES",
     cell: ({ row }) =>
-      h("div", { class: "uppercase" }, `${row.getValue("person").names} ${row.getValue("person").lastnames}`),
+      h("div", { class: "uppercase w-[150px]" }, [
+        h("div", { class: "flex justify-start" }, row.getValue("person").doc_num),
+        h("p", { class: "flex justify-start" }, `${row.getValue("person").names} ${row.getValue("person").lastnames}`),
+      ]),
   }),
 
   columnHelper.accessor("person", {
@@ -88,6 +96,20 @@ export const columns = [
         h(Badge, { variant: "outline", class: genderClass }, () => row.getValue("person").gender)
       );
     },
+  }),
+
+  columnHelper.accessor("person", {
+    header: "IGLESIA",
+    cell: ({ row }) =>
+      h("div", { class: "uppercase w-[120px]" }, [
+        h("div", { class: "flex justify-start" }, row.getValue("person").church.description),
+        h("p", { class: "flex justify-start" }, row.getValue("person").type_person),
+      ]),
+  }),
+
+  columnHelper.accessor("person", {
+    header: "Telefono",
+    cell: ({ row }) => h("div", { class: "uppercase" }, row.getValue("person").phone),
   }),
 
   columnHelper.accessor("countgroup", {

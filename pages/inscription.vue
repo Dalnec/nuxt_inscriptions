@@ -336,6 +336,12 @@ const onSubmit = form.handleSubmit(async () => {
                   </FormItem>
                   <FormItem class="flex items-center space-y-0 gap-x-3">
                     <FormControl>
+                      <RadioGroupItem value="L" />
+                    </FormControl>
+                    <FormLabel class="font-normal"> Líder </FormLabel>
+                  </FormItem>
+                  <FormItem class="flex items-center space-y-0 gap-x-3">
+                    <FormControl>
                       <RadioGroupItem value="M" />
                     </FormControl>
                     <FormLabel class="font-normal"> Miembro Activo </FormLabel>

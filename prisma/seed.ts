@@ -55,6 +55,7 @@ const churches_data = [
   { description: "Naranjillo" },
   { description: "Naranjos" },
   { description: "Nueva Cajamarca" },
+  { description: "Rioja" },
   { description: "Nueva Rioja" },
   { description: "Nuevo Gualulo" },
   { description: "Nuevo Loreto" },
@@ -108,13 +109,12 @@ const paymentmethod_data = [
   { description: "EFECTIVO" },
   { description: "BCP", account: "43505016976070", icon: "/images/icons/logo_bcp.ico" },
   { description: "BBVA", account: "0011-0814-0216399183", icon: "/images/icons/logo_bbva.ico" },
-  { description: "PIURA", account: "210-01-072684", icon: "/images/icons/logo_yape.ico" },
-  { description: "INTERBANK", account: "8983322363216", icon: "/images/icons/logo_yape.ico" },
+  { description: "PIURA", account: "210-01-072684", icon: "/images/icons/logo_piura.ico" },
+  { description: "INTERBANK", account: "8983322363216", icon: "/images/icons/logo_interbank.ico" },
   { description: "YAPE", account: "935018772", icon: "/images/icons/logo_yape.ico" },
   { description: "PLIN", account: "935018772", icon: "/images/icons/logo_plin.ico" },
 ];
 const documenttype_data = [
-  { id: "0", description: "SIN DOCUMENTO", active: true },
   { id: "1", description: "DNI", active: true },
   { id: "4", description: "CI", active: true },
   { id: "7", description: "PASAPORTE", active: true },

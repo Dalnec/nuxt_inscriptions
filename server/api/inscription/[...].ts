@@ -63,6 +63,7 @@ router.post(
     const imgcode = nanoid();
     const typePerson = {
       P: "PASTOR",
+      L: "LIDER",
       M: "MIEMBROACTIVO",
       I: "INVITADO",
     };
@@ -153,15 +154,11 @@ router.post(
 
     // JOIN ALL PERSONS
     const all_persons = [...existingPersons, ...new_persons_saved];
-
-    const namefile = `${payment}_${groupcode}_${imgcode}.${file.filename.split(".").pop()}`;
-    // const path = `./public/uploads/${namefile}`;
-    // const img_path = `${path.join("public", "uploads", namefile)}`;
-    // console.log("img_path", img_path);
-
-    // await writeFile(img_path, file.data);
-
-    await useStorage().setItemRaw(`fs:${namefile}`, file.data);
+    let namefile = "cash.png";
+    if (payment != "1") {
+      namefile = `${payment}_${groupcode}_${imgcode}.${file.filename.split(".").pop()}`;
+      await useStorage().setItemRaw(`fs:${namefile}`, file.data);
+    }
 
     // CREATE INSCRIPTION
     const inscriptions = all_persons.map((i) => {

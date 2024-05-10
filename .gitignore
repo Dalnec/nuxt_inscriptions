@@ -34,5 +34,5 @@ public/css/*
 public/images/*
 !public/images/icons
 !public/images/banners
-
+!public/uploads/cash.png
 pages/home.vue
