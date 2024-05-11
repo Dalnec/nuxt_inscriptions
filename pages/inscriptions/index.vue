@@ -17,7 +17,12 @@ definePageMeta({
           <iframe
             width="420"
             height="315"
-            src="https://www.youtube.com/embed/EK6TILMR5T8?autoplay=0&mute=0"
+            src="https://www.youtube.com/embed/M5ndVe_xIKM?autoplay=0&mute=0"
+            allowfullscreen
+            mozallowfullscreen="mozallowfullscreen"
+            msallowfullscreen="msallowfullscreen"
+            oallowfullscreen="oallowfullscreen"
+            webkitallowfullscreen="webkitallowfullscreen"
             frameborder="0"
           ></iframe>
         </div>
