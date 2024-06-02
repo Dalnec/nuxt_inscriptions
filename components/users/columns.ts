@@ -54,6 +54,15 @@ export const columns = [
             reload: table.options.meta.reload,
           },
         }),
+        // h(DialogActionUser, {
+        //   props: {
+        //     item: row.original,
+        //     action: "resend",
+        //     title: "Resend Email Confirmation",
+        //     description: "¿Estás seguro de reenviar el correo de confirmación?",
+        //     reload: table.options.meta.reload,
+        //   },
+        // }),
         // h(DropdownAction, {
         //   props: { inscription: row.original, reload: table.options.meta.reload },
         // }),

@@ -280,4 +280,30 @@ router.get(
   })
 );
 
+router.get(
+  "/report/excel",
+  defineEventHandler(async (event) => {
+    const results = await prisma.inscription.findMany({
+      orderBy: [{ id: "desc" }],
+      include: {
+        person: {
+          include: {
+            church: true,
+            documenttype: true,
+            user: true,
+          },
+        },
+        paymentmethod: true,
+      },
+    });
+
+    const formattedResults = results.map((result) => ({
+      ...result,
+      person: { ...result.person, birthday: formatDate(result.person.birthday) },
+    }));
+
+    return formattedResults;
+  })
+);
+
 export default useBase("/api/inscription", router.handler);

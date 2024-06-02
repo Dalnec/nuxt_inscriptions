@@ -26,6 +26,8 @@
     "clsx": "^2.1.0",
     "embla-carousel": "^8.0.0",
     "embla-carousel-vue": "^8.0.0",
+    "exceljs": "^3.4.0",
+    "file-saver": "^2.0.5",
     "lucide-vue-next": "^0.363.0",
     "nanoid": "^5.0.7",
     "nuxt": "^3.11.1",

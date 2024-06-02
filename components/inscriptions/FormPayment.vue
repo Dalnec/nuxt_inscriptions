@@ -123,7 +123,7 @@ const virifyImg = computed(() => {
 });
 const totalToPay = computed(() => {
   if (listforms.value.length == 0) return 0;
-  if (format(new Date(), "yyyy-MM-dd") <= format(parseISO("2024-05-31"), "yyyy-MM-dd")) {
+  if (format(new Date(), "yyyy-MM-dd") <= format(parseISO("2024-06-15"), "yyyy-MM-dd")) {
     props.paymentForm.amount = 100;
     return listforms.value.length * 100;
   }

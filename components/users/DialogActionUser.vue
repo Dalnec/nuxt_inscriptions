@@ -35,10 +35,27 @@ const deleteUser = async (item: any) => {
     duration: 3000,
   });
 };
+
+// const resend = async (item: any) => {
+//   console.log("resend", item.email);
+
+//   const { data, error } = await supabase.auth.resend({
+//     type: "signup",
+//     email: item.email,
+//     // options: {
+//     //   emailRedirectTo: "https://jnicamp.tsi.pe/login",
+//     // },
+//   });
+//   console.log(data, error);
+// };
+
 const actions = (action: string, item: any) => {
   switch (action) {
     case "delete":
       deleteUser(item);
+      break;
+    case "resend":
+      // resend(item);
       break;
 
     default:
@@ -51,7 +68,7 @@ const actions = (action: string, item: any) => {
   <AlertDialog>
     <AlertDialogTrigger as-child>
       <Button variant="ghost" class="w-6 h-6 p-0 pr-1">
-        <Icon name="ic:baseline-delete" class="ms-auto h-4 w-4" />
+        <Icon :name="props.action == 'delete' ? 'ic:baseline-delete' : 'fa:send'" class="ms-auto h-4 w-4" />
       </Button>
     </AlertDialogTrigger>
     <AlertDialogContent>

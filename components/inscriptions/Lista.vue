@@ -12,6 +12,7 @@ import { ref, onMounted } from "vue";
 import { columns } from "./columns";
 import DataTable from "./DataTable.vue";
 import ListaPagination from "./ListaPagination.vue";
+import { generateExcelReportCatalogue } from "~/hooks/inscriptions_excel";
 
 const search = ref("");
 const data = ref({
@@ -62,6 +63,14 @@ const searchInscription = async () => {
 onMounted(async () => {
   await loadData();
 });
+
+const downloadExcel = async () => {
+  pending.value = true;
+  const res = await $fetch("/api/inscription/report/excel");
+  // console.log(res);
+  await generateExcelReportCatalogue(res);
+  pending.value = false;
+};
 </script>
 
 <template>
@@ -103,6 +112,9 @@ onMounted(async () => {
     >
       <Icon name="material-symbols:refresh" class="h-5 w-5 opacity-80" />
       <div class="hidden md:block">Actualizar</div>
+    </Button>
+    <Button variant="ghost" @click.prevent="downloadExcel()" class="p-2">
+      <Icon name="vscode-icons:file-type-excel" class="h-6 w-6 opacity-95" />
     </Button>
   </div>
   <div v-if="pending" class="flex justify-center">Cargando...</div>
