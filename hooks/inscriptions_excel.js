@@ -52,7 +52,7 @@ export const generateExcelReportCatalogue = async (data) => {
                 type_person: d.person.type_person,
                 phone: d.person.phone,
                 paymentmethod: d.paymentmethod.description,
-                amount: d.amount,
+                amount: +d.amount,
                 status: d.status,
             }
         });
