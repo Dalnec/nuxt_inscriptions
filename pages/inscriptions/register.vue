@@ -2,7 +2,15 @@
 import { toast } from "@/components/ui/toast";
 definePageMeta({
   layout: "registration",
-  middleware: "inscriptionauth",
+  // middleware: "inscriptionauth",
+  middleware: [
+    function (to, from) {
+      const user = useUserInfo();
+      if (!user.value) {
+        return navigateTo("/");
+      }
+    },
+  ],
 });
 
 const { pending: ch_pending, data: churches } = await useFetch("/api/person/churches", {

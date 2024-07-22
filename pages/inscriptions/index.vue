@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { format, parseISO } from "date-fns";
 definePageMeta({
   layout: "registration",
 });
@@ -27,7 +28,7 @@ definePageMeta({
           ></iframe>
         </div>
 
-        <div>
+        <div v-if="format(new Date(), 'yyyy-MM-dd') < format(parseISO('2024-07-22'), 'yyyy-MM-dd')">
           <RadioGroupItem id="individual" value="individual" class="peer sr-only" />
           <NuxtLink
             to="/inscriptions/register?group=true"

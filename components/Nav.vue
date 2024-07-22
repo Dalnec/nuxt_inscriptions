@@ -9,7 +9,9 @@
         <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
           <!-- to="/inscriptions/register?group=true" -->
           <NuxtLink
-            v-if="$route.name == 'index'"
+            v-if="
+              $route.name == 'index' && format(new Date(), 'yyyy-MM-dd') < format(parseISO('2024-07-22'), 'yyyy-MM-dd')
+            "
             to="/inscriptions"
             class="bg-violet-600 hover:bg-violet-700 text-white font-bold py-2 px-4 rounded shadow-md shadow-violet-600/100 duration-500 transition ease-out scale-100 hover:scale-110"
           >
@@ -86,7 +88,7 @@
 <script setup lang="ts">
 import { useWindowSize } from "@vueuse/core";
 import { ref } from "vue";
-
+import { format, parseISO } from "date-fns";
 const { width, height } = useWindowSize();
 const showBurgerMenu = ref(width.value < 768 ? false : true);
 

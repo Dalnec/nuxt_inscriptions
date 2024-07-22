@@ -4,7 +4,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
   if (user.value) {
     if (!useuserinfo.value) {
-      console.log("user", user.value);
+      // console.log("user", user.value);
 
       useuserinfo.value = await $fetch("/api/user/email", {
         method: "POST",
