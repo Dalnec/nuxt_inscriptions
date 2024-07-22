@@ -70,7 +70,8 @@ onMounted(() => {
     type_person: set_type_person(props.inscription.person.type_person),
     mode: "list",
   };
-  birthday.value = new Date(formdata.value.birthday);
+  // birthday.value = new Date(formdata.value.birthday);
+  birthday.value = parseISO(formdata.value.birthday);
   cardPersonalData.value = true;
   form.resetForm({ values: { ...formdata.value } });
   formPersonalData.value = false;

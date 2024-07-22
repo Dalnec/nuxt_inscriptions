@@ -86,10 +86,13 @@ model Inscription {
   voucherpath     String             @db.VarChar(255)
   voucheramount   Decimal            @db.Decimal(10, 2)
   amount          Decimal            @db.Decimal(10, 2)
+  observations    String?            @db.VarChar(255)
   person          Person             @relation(fields: [personId], references: [id])
   personId        Int
   paymentmethod   PaymentMethod?     @relation(fields: [paymentMethodId], references: [id])
   paymentMethodId Int?
+  user            User?              @relation(fields: [userId], references: [id])
+  userId          Int?
 
   @@map("inscription")
 }
@@ -103,12 +106,13 @@ model Profile {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
-  persons   Person[]
-  profile   Profile? @relation(fields: [profileId], references: [id])
-  profileId Int?
+  id          Int           @id @default(autoincrement())
+  email       String        @unique
+  name        String?
+  persons     Person[]
+  profile     Profile?      @relation(fields: [profileId], references: [id])
+  profileId   Int?
+  Inscription Inscription[]
 
   @@map("user")
 }

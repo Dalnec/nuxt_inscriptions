@@ -35,14 +35,14 @@ const loadData = async () => {
   const res = await $fetch("/api/inscription/list", {
     params: { search: search.value, take: 20, skip: (currentPage.value - 1) * 20 },
   });
-  console.log(res);
+  // console.log(res);
   data.value = res;
   pending.value = false;
 };
 
 const changePage = async (newPage: any) => {
   currentPage.value = newPage;
-  console.log("currentPage", currentPage.value);
+  // console.log("currentPage", currentPage.value);
   await loadData();
 };
 
@@ -88,6 +88,7 @@ const downloadExcel = async () => {
         @click.prevent="
           () => {
             searchInput = '';
+            search = '';
             currentPage = 1;
             loadData();
           }
@@ -102,8 +103,8 @@ const downloadExcel = async () => {
     </div>
     <Button
       @click.prevent="
-        searchInput = '';
-        search = '';
+        // searchInput = '';
+        // search = '';
         currentPage = 1;
         loadData();
       "

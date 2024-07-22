@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import DropdownAction from "./DataTableDropDown.vue";
 import DialogFormPerson from "./DialogFormPerson.vue";
 import DialogAction from "./DialogImgViewer.vue";
+import DialogFormAmount from "./DialogFormAmount.vue";
 
 export interface PersonInscription {
   id: number;
@@ -188,6 +189,12 @@ export const columns = [
             reload: table.options.meta.reload,
             churches: table.options.meta.churches,
             documentTypes: table.options.meta.documentTypes,
+          },
+        }),
+        h(DialogFormAmount, {
+          props: {
+            inscription: row.original,
+            reload: table.options.meta.reload,
           },
         }),
         h(DropdownAction, {

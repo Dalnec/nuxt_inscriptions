@@ -7,7 +7,8 @@
         @click.prevent="
           () => {
             search = '';
-            loadData();
+            // loadData();
+            data = { count: 0, results: [] };
           }
         "
         class="absolute right-2 top-2 p-1 text-sm text-gray-500 hover:text-gray-700"
@@ -20,8 +21,11 @@
     </div>
     <Button
       @click.prevent="
-        search = '';
-        loadData();
+        // search = '';
+        data = { count: 0, results: [] };
+        if (search) {
+          loadData();
+        }
       "
       variant="outline"
       class="text-violet-600 border-violet-600"
@@ -45,7 +49,7 @@
 import CardView from "./CardView.vue";
 
 const useloading = useLoading();
-const data = ref({});
+const data = ref({ count: 0, results: [] });
 const pending = ref(false);
 const search = ref("");
 const useuserinfo = useUserInfo();

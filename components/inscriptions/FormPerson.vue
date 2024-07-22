@@ -156,7 +156,7 @@ const getPersonDni = async (dni: string) => {
 };
 
 const onSubmit = form.handleSubmit(async () => {
-  console.log(formdata.value);
+  // console.log(formdata.value);
   if (formdata.value.church_id) {
     let person: any = listforms.value.find((item) => item.doc_num == formdata.value.doc_num);
     if (person) {

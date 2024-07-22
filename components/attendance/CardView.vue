@@ -106,10 +106,14 @@ const confirmAttendance = async () => {
         <AttendanceDialogConfirm
           :props="{
             label: props.item.status == 'REGISTRADO' ? 'CONFIRMADA' : 'POR CONFIRMAR',
-            title: 'CONFIRMAR ASISTENCIA',
+            title: props.item.status == 'REGISTRADO' ? 'RETORNAR *A POR CONFIRMAR*' : 'CONFIRMAR ASISTENCIA',
             description: `DNI:${props.item.person.doc_num} 
              ${props.item.person.names} ${props.item.person.lastnames}
-             Desea confirmar asistencia?`,
+             ${
+               props.item.status == 'REGISTRADO'
+                 ? 'Desea cambiar el estado a POR CONFIRMAR'
+                 : 'Desea confirmar asistencia'
+             }?`,
             action: confirmAttendance,
             status: props.item.status,
           }"

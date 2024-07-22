@@ -1,8 +1,8 @@
 <script setup>
 import { toast } from "@/components/ui/toast";
 definePageMeta({
-  layout: "registration",
-  middleware: "inscriptionauth",
+  layout: "admin",
+  middleware: "authenticated",
 });
 
 const { pending: ch_pending, data: churches } = await useFetch("/api/person/churches", {
@@ -66,6 +66,8 @@ const propsFormPayment = ref({
     voucher: "",
     imagePreview: "",
     amount: 0,
+    observations: "",
+    userId: useuserinfo.value.id,
     file: [],
   },
   userinfo: useuserinfo.value,
@@ -76,6 +78,8 @@ const clearData = () => {
   propsFormPayment.value.paymentForm.voucher = "";
   propsFormPayment.value.paymentForm.imagePreview = undefined;
   propsFormPayment.value.paymentForm.amount = 0;
+  propsFormPayment.value.paymentForm.observations = "";
+  propsFormPayment.value.paymentForm.userId = useuserinfo.value.id;
   propsFormPayment.value.paymentForm.file = [];
   listforms.value = [];
 };
@@ -92,6 +96,15 @@ onBeforeRouteLeave((to, from) => {
   clearData();
 });
 
+const messageToast = (title, message) => {
+  toast({
+    title: title,
+    description: message,
+    class: "py-3",
+    duration: 4000,
+  });
+};
+
 const save = async () => {
   loadingSave.value = true;
   useloading.value = true;
@@ -100,61 +113,71 @@ const save = async () => {
   const dataform = { persons: [...listforms.value], payment: { ...propsFormPayment.value.paymentForm } };
   if (dataform.persons.length > 0) {
     if (dataform.payment.paymentmethod) {
-      if (dataform.payment.paymentmethod != "1" || dataform.payment.file.length > 0) {
-        if (dataform.payment.paymentmethod != "1" || dataform.payment.voucher) {
-          try {
-            const formData = new FormData();
-            const files = dataform.payment.file;
-            // Append the array of objects as a JSON string
-            formData.append("data", JSON.stringify(dataform.persons));
-            formData.append("payment", JSON.stringify(dataform.payment.paymentmethod));
-            formData.append("amount", JSON.stringify(dataform.payment.amount));
+      // if (dataform.payment.paymentmethod != "1" || dataform.payment.file.length > 0) {
+      //   if (dataform.payment.paymentmethod != "1" || dataform.payment.voucher) {
+      try {
+        const formData = new FormData();
+        const files = dataform.payment.file;
+        // Append the array of objects as a JSON string
+        formData.append("data", JSON.stringify(dataform.persons));
+        formData.append("payment", JSON.stringify(dataform.payment.paymentmethod));
+        formData.append("amount", JSON.stringify(dataform.payment.amount));
+        formData.append("observations", JSON.stringify(dataform.payment.observations));
+        formData.append("userId", JSON.stringify(dataform.payment.userId));
 
-            if (dataform.payment.paymentmethod != "1") {
-              for (let i = 0; i < files.length; i++) {
-                formData.append("file", files[i]);
-              }
-            }
-
-            const res = await $fetch("/api/inscription/create", {
-              method: "POST",
-              body: formData,
-            });
-
-            // console.log(res);
-            if (!res.success) {
-              res.data.forEach((p) => {
-                alertmessaje.value.data.push({
-                  title: "ERROR INESPERADO",
-                  description: `${res.message}: ${p.person.doc_num} - ${p.person.names} ${p.person.lastnames}. Elimine la persona de la Lista`,
-                  class: "bg-amber-600 text-bold text-white",
-                  duration: 4000,
-                });
-              });
-              setTimeout(() => {
-                loadingSave.value = false;
-                useloading.value = false;
-              }, 2000);
-              return;
-            }
-            clearData();
-            showpayment.value = false;
-            toast({
-              title: "INSCRIPCION FINALIZADA",
-              description: "Proceso realizado con exito",
-              class: "bg-green-600 text-white py-3",
-              duration: 4000,
-            });
-            setTimeout(() => {
-              useloading.value = false;
-              loadingSave.value = false;
-            }, 2000);
-            return;
-          } catch (error) {
-            console.log(error);
+        if (dataform.payment.paymentmethod != "1") {
+          for (let i = 0; i < files.length; i++) {
+            formData.append("file", files[i]);
           }
         }
+
+        const res = await $fetch("/api/inscription/create", {
+          method: "POST",
+          body: formData,
+        });
+
+        // console.log(res);
+        if (!res.success) {
+          res.data.forEach((p) => {
+            alertmessaje.value.data.push({
+              title: "ERROR INESPERADO",
+              description: `${res.message}: ${p.person.doc_num} - ${p.person.names} ${p.person.lastnames}. Elimine la persona de la Lista`,
+              class: "bg-amber-600 text-bold text-white",
+              duration: 4000,
+            });
+          });
+          setTimeout(() => {
+            loadingSave.value = false;
+            useloading.value = false;
+          }, 2000);
+          return;
+        }
+        clearData();
+        showpayment.value = false;
+        toast({
+          title: "INSCRIPCION FINALIZADA",
+          description: "Proceso realizado con exito",
+          class: "bg-green-600 text-white py-3",
+          duration: 4000,
+        });
+        setTimeout(() => {
+          useloading.value = false;
+          loadingSave.value = false;
+        }, 2000);
+        return;
+      } catch (error) {
+        console.log(error);
       }
+      // }
+      // } else {
+      //   loadingSave.value = false;
+      //   useloading.value = false;
+      //   messageToast("ERROR", "EFECTIVO");
+      // }
+    } else {
+      loadingSave.value = false;
+      useloading.value = false;
+      messageToast("ERROR", "Por favor seleccione un metodo de pago");
     }
   }
 };
@@ -174,7 +197,7 @@ const save = async () => {
           </CardHeader>
           <CardContent class="space-y-4 pb-0">
             <InscriptionsFormPerson v-show="!showpayment" :props="propsFormPerson" />
-            <InscriptionsFormPayment v-show="showpayment" :props="propsFormPayment" />
+            <InscriptionsFormPrivatePayment v-show="showpayment" :props="propsFormPayment" />
           </CardContent>
           <CardHeader>
             <Separator />
@@ -185,7 +208,6 @@ const save = async () => {
               Ver Lista
             </Button>
             <div>
-              <!-- <InscriptionsSheetPersons v-if="listforms.length > 0" :props="propsSheet" /> -->
               <InscriptionsSheetPersons :props="propsSheet" />
             </div>
             <Button
@@ -196,6 +218,7 @@ const save = async () => {
             >
               ENVIAR!
             </Button>
+            <!-- <pre>{{ propsFormPayment }}</pre> -->
           </CardContent>
         </Card>
       </div>

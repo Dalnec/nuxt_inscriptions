@@ -25,6 +25,8 @@ router.post(
     let data: any;
     let payment: any;
     let amount: any;
+    let observations: any;
+    let userId: any;
 
     formData?.forEach((value: any) => {
       if (value.name && value.data) {
@@ -36,6 +38,10 @@ router.post(
           payment = JSON.parse(value.data.toString("utf8"));
         } else if (value.name == "amount") {
           amount = JSON.parse(value.data.toString("utf8"));
+        } else if (value.name == "observations") {
+          observations = JSON.parse(value.data.toString("utf8"));
+        } else if (value.name == "userId") {
+          userId = JSON.parse(value.data.toString("utf8"));
         }
       }
     });
@@ -122,6 +128,8 @@ router.post(
         voucheramount: amount * all_persons.length,
         amount: amount,
         personId: i.id,
+        observations: !!observations ? observations : null,
+        userId: !!userId ? +userId : null,
       };
     });
 

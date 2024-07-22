@@ -46,6 +46,25 @@
               "
             >
               <NuxtLink
+                to="/inscriptions/privateregister"
+                class="block py-2 px-3 md:p-0 text-white shadow-lg shadow-violet-600/{{selected=='home'?'100':'50'}} rounded md:bg-transparent hover:shadow-violet-600/100 hover:brightness-110"
+                @click.prevent="
+                  () => {
+                    if (width < 768) showBurgerMenu = false;
+                  }
+                "
+              >
+                Nueva Inscripción
+              </NuxtLink>
+            </li>
+            <li
+              v-if="
+                user.profile.description === 'ADMINISTRADOR' ||
+                user.profile.description === 'root' ||
+                user.profile.description === 'STAFF'
+              "
+            >
+              <NuxtLink
                 to="/inscriptions/list"
                 class="block py-2 px-3 md:p-0 text-white shadow-lg shadow-violet-600/{{selected=='home'?'100':'50'}} rounded md:bg-transparent hover:shadow-violet-600/100 hover:brightness-110"
                 @click.prevent="
