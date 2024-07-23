@@ -189,13 +189,17 @@ export const columns = [
     cell: ({ row }) => {
       return h(
         "div",
-        { class: "uppercase max-w-[130px] overflow-x-hidden h-[60px] overflow-y-hidden hover:overflow-y-auto" },
-        !!row.getValue("user")
-          ? [
-              h("div", { class: "flex justify-start" }, "usuario: " + row.getValue("user").name),
-              h("p", { class: "flex justify-start" }, row.original.observations),
-            ]
-          : []
+        {
+          class: "uppercase max-w-[145px] overflow-x-hidden h-[60px] overflow-y-hidden hover:overflow-y-auto",
+        },
+        [
+          h(
+            "div",
+            { class: "flex justify-start" },
+            !!row.getValue("user") ? `usuario: ${row.getValue("user").name}` : ""
+          ),
+          h("p", { class: "flex justify-start" }, !!row.original.observations ? row.original.observations : ""),
+        ]
       );
     },
   }),

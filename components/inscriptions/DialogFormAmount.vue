@@ -22,7 +22,9 @@ const save = async () => {
     method: "PUT",
     body: {
       amount: amount.value,
-      observations: `${props.inscription.observations}|Edicion Monto: S/.${amount.value} usuario:${user.value?.name}`,
+      observations: `${!!props.inscription.observations ? props.inscription.observations + "|" : ""}Edicion Monto: S/.${
+        amount.value
+      } usuario:${user.value?.name}`,
     },
   });
   setTimeout(() => {
