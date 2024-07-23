@@ -30,6 +30,7 @@ async function searchInscriptions(searchTerm: any, take: number, skip: number) {
         },
       },
       paymentmethod: true,
+      user: { select: { name: true } },
     },
   });
 

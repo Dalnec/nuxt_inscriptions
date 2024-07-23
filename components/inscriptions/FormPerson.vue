@@ -47,12 +47,12 @@ const birthday = ref();
 const errorMessage = ref("");
 
 watch(editDataForm, (editForm: any) => {
-  console.log(editForm);
+  // console.log(editForm);
 
   if (editForm) {
     editing.value = true;
     formdata.value = { ...editForm };
-    birthday.value = parseDate(formdata.value.birthday);
+    birthday.value = parseISO(formdata.value.birthday); //parseDate(formdata.value.birthday);
     cardPersonalData.value = true;
     form.resetForm({ values: { ...formdata.value } });
     formPersonalData.value = false;
@@ -135,7 +135,7 @@ const getPersonDni = async (dni: string) => {
     formdata.value.names = data.data.nombres;
     formdata.value.lastnames = `${data.data.apellido_paterno} ${data.data.apellido_materno}`;
     formdata.value.birthday = data.data.fecha_nacimiento;
-    birthday.value = parseISO(data.data.fecha_nacimiento);
+    birthday.value = data.data.fecha_nacimiento ? parseISO(data.data.fecha_nacimiento) : undefined;
     formdata.value.gender = data.data.sexo == "MASCULINO" ? "M" : "F";
     form.resetForm({ values: { ...formdata.value } });
     cardPersonalData.value = true;

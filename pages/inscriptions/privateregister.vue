@@ -82,6 +82,7 @@ const clearData = () => {
   propsFormPayment.value.paymentForm.userId = useuserinfo.value.id;
   propsFormPayment.value.paymentForm.file = [];
   listforms.value = [];
+  disabledSend(true);
 };
 
 const propsFormPerson = ref({
@@ -117,7 +118,6 @@ const save = async () => {
       //   if (dataform.payment.paymentmethod != "1" || dataform.payment.voucher) {
       try {
         const formData = new FormData();
-        const files = dataform.payment.file;
         // Append the array of objects as a JSON string
         formData.append("data", JSON.stringify(dataform.persons));
         formData.append("payment", JSON.stringify(dataform.payment.paymentmethod));
@@ -125,11 +125,11 @@ const save = async () => {
         formData.append("observations", JSON.stringify(dataform.payment.observations));
         formData.append("userId", JSON.stringify(dataform.payment.userId));
 
-        if (dataform.payment.paymentmethod != "1") {
-          for (let i = 0; i < files.length; i++) {
-            formData.append("file", files[i]);
-          }
-        }
+        // if (dataform.payment.paymentmethod != "1") {
+        //   for (let i = 0; i < files.length; i++) {
+        //     formData.append("file", files[i]);
+        //   }
+        // }
 
         const res = await $fetch("/api/inscription/create", {
           method: "POST",

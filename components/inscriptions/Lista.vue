@@ -22,6 +22,7 @@ const data = ref({
 const searchInput = ref("");
 const currentPage = ref(1);
 const pending = ref(false);
+const useloading = useLoading();
 
 const { pending: ch_pending, data: churches } = await useFetch("/api/person/churches", {
   lazy: false,
@@ -65,15 +66,18 @@ onMounted(async () => {
 });
 
 const downloadExcel = async () => {
-  pending.value = true;
+  useloading.value = true;
   const res = await $fetch("/api/inscription/report/excel");
   // console.log(res);
   await generateExcelReportCatalogue(res);
-  pending.value = false;
+  setTimeout(() => {
+    useloading.value = false;
+  }, 1000);
 };
 </script>
 
 <template>
+  <LoadingView v-if="useloading" />
   <div class="container pt-5 px-3 flex justify-between mb-4">
     <div class="relative w-full max-w-sm items-center">
       <Input

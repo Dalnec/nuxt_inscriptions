@@ -4,6 +4,7 @@ import { toTypedSchema } from "@vee-validate/zod";
 import * as z from "zod";
 import { toast } from "@/components/ui/toast";
 import { format, parseISO } from "date-fns";
+import { columns } from "../users/columns";
 
 const { props = {} } = defineProps(["props"]);
 const listforms = useListForms();
@@ -23,94 +24,9 @@ const form = useForm({
 });
 
 onMounted(() => {
-  // paymentsMethods.value = false ? props.paymentsMethods : props.paymentsMethods.filter((p: any) => p.id != 1);
   paymentsMethods.value = props.paymentsMethods;
 });
 
-const imagePreview = ref();
-
-watch(imagePreview, (img: any) => {
-  if (img && formdata.value.file.length > 0) {
-    props.disabledSend(false);
-  } else {
-    if (formdata.value.paymentmethod == "1") {
-      props.disabledSend(false);
-    } else {
-      props.disabledSend(true);
-      imagePreview.value = undefined;
-    }
-  }
-});
-
-watch(formdata.value.file, (data: any) => {
-  // console.log("data", data);
-
-  if (data.length <= 0) {
-    imagePreview.value = undefined;
-  }
-});
-
-const copyText = async (account: string) => {
-  try {
-    await navigator.clipboard.writeText(account);
-    toast({
-      title: "Cuenta Copiada!",
-      description: account,
-      class: "py-3",
-      duration: 4000,
-    });
-  } catch ($e) {
-    toast({
-      title: "Uh oh! Something went wrong.",
-      variant: "destructive",
-      description: "There was a problem with your request." + $e,
-      class: "py-3",
-      duration: 5000,
-    });
-  }
-};
-
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-function checkFileType(file: File) {
-  if (file?.name) {
-    // const fileType = file.name.split(".").pop();
-    if (ACCEPTED_IMAGE_TYPES.includes(file.type)) return true;
-  }
-  return false;
-}
-
-const previewImage = (event: any) => {
-  const file = event.target.files[0];
-  formdata.value.file = event.target.files;
-
-  if (checkFileType(file)) {
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        imagePreview.value = e.target?.result;
-      };
-      reader.readAsDataURL(file);
-    }
-  } else {
-    imagePreview.value = null;
-    formdata.value.voucher = "";
-    formdata.value.file = [];
-    toast({
-      title: "Error formato no aceptado :(",
-      variant: "destructive",
-      class: "py-3",
-      duration: 5000,
-    });
-  }
-};
-const virifyImg = computed(() => {
-  if (formdata.value.file.length > 0) {
-    return true;
-  } else {
-    imagePreview.value = undefined;
-    return false;
-  }
-});
 const totalToPay = computed(() => {
   if (listforms.value.length == 0) {
     prices.value.forEach((p) => {
@@ -118,11 +34,7 @@ const totalToPay = computed(() => {
     });
     return 0;
   }
-  // if (format(new Date(), "yyyy-MM-dd") <= format(parseISO("2024-06-15"), "yyyy-MM-dd")) {
-  //   props.paymentForm.amount = 100;
-  //   return listforms.value.length * 100;
-  // }
-  // props.paymentForm.amount = 120;
+
   const init = prices.value.find((p) => !p.selected);
   if (!init) return 0;
   props.paymentForm.amount = prices.value.find((p) => p.selected)?.price;
@@ -166,6 +78,24 @@ const prices = ref([
     price: 50,
     selected: true,
   },
+  {
+    id: 7,
+    description: "1 DÍA",
+    price: 25,
+    selected: true,
+  },
+  {
+    id: 8,
+    description: "TALLERES",
+    price: 40,
+    selected: true,
+  },
+  {
+    id: 9,
+    description: "OTRO MONTO",
+    price: 0,
+    selected: true,
+  },
 ]);
 </script>
 <template>
@@ -185,23 +115,53 @@ const prices = ref([
         @click="
           prices.forEach((p) => {
             p.selected = item.id == p.id ? true : false;
+            if (p.id == 9) {
+              p.price = 0;
+              props.disabledSend(true);
+            }
           });
           formdata.observations = item.description;
         "
       >
         <div class="flex justify-center text-green-700">
-          <span class="text-xs">{{ item.description }}</span>
+          <span :class="item.id !== 9 ? 'text-xs' : 'text-md hover:text-green-500'">{{ item.description }}</span>
         </div>
-        <div class="flex justify-center">
+        <div v-if="item.id !== 9" class="flex justify-center">
           <span class="text-lg">S/.{{ item.price }}</span>
         </div>
       </div>
+    </div>
+    <div v-if="prices.find((p) => p.selected)?.id === 9" class="grid grid-cols-1 gap-2 py-2">
+      <Label>INGRESE NUEVO MONTO:</Label>
+      <Input
+        type="number"
+        placeholder="Nuevo Monto S/."
+        @update:modelValue="
+          (v) => {
+            let option = prices.find((p) => p.selected);
+            option.price = v;
+          }
+        "
+        autocomplete="off"
+      />
+      <Label>INGRESE OBSERVACIONES:</Label>
+      <Input
+        type="text"
+        placeholder="Observaciones"
+        v-model="formdata.observations"
+        @update:modelValue="
+          (v) => {
+            formdata.observations = v;
+          }
+        "
+        autocomplete="off"
+      />
     </div>
     <div class="flex justify-center bg-gray-200 text-gray-700 font-bold text-2xl p-4 rounded-lg shadow-md">
       TOTAL S/. {{ totalToPay }}
     </div>
     <FormField v-slot="{ componentField }" name="paymentmethod">
-      <FormItem>
+      <FormItem v-if="totalToPay > 0">
         <FormLabel>METODO DE PAGO</FormLabel>
         <FormControl class="mt-4">
           <Tabs class="w-full">
@@ -214,15 +174,13 @@ const prices = ref([
                 @click="
                   () => {
                     formdata.paymentmethod = '' + item.id;
-                    if (formdata.paymentmethod == '1') {
-                      imagePreview = null;
-                    } else {
-                      imagePreview = undefined;
-                    }
+                    // if (formdata.paymentmethod == '1') {
+                    props.disabledSend(false);
+                    // }
                   }
                 "
-                :disabled="totalToPay <= 0"
               >
+                <!-- :disabled="totalToPay <= 0" -->
                 {{ item.description }}
               </TabsTrigger>
             </TabsList>
@@ -232,17 +190,6 @@ const prices = ref([
                   <img :src="item.icon" class="" :alt="item.id" width="60" />
                 </span>
                 <input type="text" :value="item.account" readonly class="w-full" />
-                <Button variant="secondary" class="shrink-0" @click.prevent="copyText(item.account)"> Copiar </Button>
-              </div>
-              <FormItem v-show="item.id != '1'" class="pt-4">
-                <FormLabel>ADJUNTAR RECIBO DE PAGO</FormLabel>
-                <FormControl>
-                  <Input id="picture" type="file" v-model="formdata.voucher" @change="previewImage" accept="image/*" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-              <div class="flex justify-center">
-                <img v-if="virifyImg" :src="imagePreview" alt="Image Preview" class="w-1/3 h-1/3" />
               </div>
             </TabsContent>
           </Tabs>

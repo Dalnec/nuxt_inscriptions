@@ -22,6 +22,8 @@ export interface PersonInscription {
   amount: number;
   personId: number;
   paymentMethodId: number;
+  observations: string | null;
+  userId: number | null;
   person: {
     id: number;
     created: Date;
@@ -50,6 +52,9 @@ export interface PersonInscription {
     description: string;
     active: boolean;
   };
+  user: {
+    name: string | null;
+  } | null;
 }
 const setClassBadge = (status: PersonInscription["status"]) => {
   switch (status) {
@@ -82,8 +87,8 @@ export const columns = [
   }),
 
   columnHelper.accessor("person", {
-    enablePinning: true,
-    header: "GENERO",
+    // enablePinning: true,
+    header: "GÉNERO",
     cell: ({ row }) => {
       let genderClass = "";
       if (row.getValue("person").gender === "M") {
@@ -109,7 +114,7 @@ export const columns = [
   }),
 
   columnHelper.accessor("person", {
-    header: "Telefono",
+    header: "TELEFONO",
     cell: ({ row }) => h("div", { class: "uppercase" }, row.getValue("person").phone),
   }),
 
@@ -118,30 +123,32 @@ export const columns = [
     cell: ({ row }) => h("div", { class: "flex justify-center" }, row.getValue("countgroup")),
   }),
   columnHelper.accessor("vouchergroup", {
-    header: ({ column }) => {
-      return h(
-        Button,
-        {
-          variant: "ghost",
-          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
-        },
-        () => ["COD GRUPO", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
-      );
-    },
+    // header: ({ column }) => {
+    //   return h(
+    //     Button,
+    //     {
+    //       variant: "ghost",
+    //       onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+    //     },
+    //     () => ["COD GRUPO", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+    //   );
+    // },
+    header: "COD GRUPO",
     cell: ({ row }) => h("div", { class: "flex justify-center" }, row.getValue("vouchergroup")),
   }),
 
   columnHelper.accessor("paymentmethod", {
-    header: ({ column }) => {
-      return h(
-        Button,
-        {
-          variant: "ghost",
-          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
-        },
-        () => ["METODO PAGO", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
-      );
-    },
+    // header: ({ column }) => {
+    //   return h(
+    //     Button,
+    //     {
+    //       variant: "ghost",
+    //       onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+    //     },
+    //     () => ["METODO PAGO", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+    //   );
+    // },
+    header: "METODO PAGO",
     cell: ({ row }) => {
       const inscription = row.original;
       return h("div", { class: "flex justify-center items-center" }, [
@@ -157,23 +164,40 @@ export const columns = [
   }),
 
   columnHelper.accessor("status", {
-    enablePinning: true,
-    header: ({ column }) => {
-      return h(
-        Button,
-        {
-          variant: "ghost",
-          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
-        },
-        () => ["ESTADO", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
-      );
-    },
+    // enablePinning: true,
+    // header: ({ column }) => {
+    //   return h(
+    //     Button,
+    //     {
+    //       variant: "ghost",
+    //       onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+    //     },
+    //     () => ["ESTADO", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+    //   );
+    // },
+    header: "ESTADO",
     cell: ({ row }) =>
       h(
         "div",
         { class: "capitalize" },
         h(Badge, { variant: "outline", class: setClassBadge(row.getValue("status")) }, () => row.getValue("status"))
       ),
+  }),
+
+  columnHelper.accessor("user", {
+    header: "OBSERVACIONES",
+    cell: ({ row }) => {
+      return h(
+        "div",
+        { class: "uppercase max-w-[130px] overflow-x-hidden h-[60px] overflow-y-hidden hover:overflow-y-auto" },
+        !!row.getValue("user")
+          ? [
+              h("div", { class: "flex justify-start" }, "usuario: " + row.getValue("user").name),
+              h("p", { class: "flex justify-start" }, row.original.observations),
+            ]
+          : []
+      );
+    },
   }),
 
   columnHelper.display({

@@ -45,10 +45,6 @@ router.post(
         }
       }
     });
-    // console.log("file", file);
-    // console.log("data", JSON.parse(data));
-    // console.log("payment", payment);
-    // console.log("amount", amount);
 
     const data_person = JSON.parse(data).map((p) => {
       delete p.mode;
@@ -113,7 +109,7 @@ router.post(
     // JOIN ALL PERSONS
     const all_persons = [...existingPersons, ...new_persons_saved];
     let namefile = "cash.png";
-    if (payment != "1") {
+    if (payment != "1" && !userId) {
       namefile = `${payment}_${groupcode}_${imgcode}.${file.filename.split(".").pop()}`;
       await useStorage().setItemRaw(`fs:${namefile}`, file.data);
     }
@@ -302,6 +298,7 @@ router.get(
           },
         },
         paymentmethod: true,
+        user: true,
       },
     });
 

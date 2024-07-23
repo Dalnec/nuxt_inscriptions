@@ -16,6 +16,8 @@ export const generateExcelReportCatalogue = async (data) => {
         { col: "J", header: "METODO PAGO", key: "paymentmethod", width: 18 },
         { col: "K", header: "MONTO", key: "amount", width: 12 },
         { col: "L", header: "ESTADO", key: "status", width: 18 },
+        { col: "M", header: "USUARIO", key: "user", width: 12 },
+        { col: "N", header: "OBSERVACIONES", key: "observations", width: 50 },
     ];
 
     worksheet.mergeCells("A1:L2");
@@ -54,6 +56,7 @@ export const generateExcelReportCatalogue = async (data) => {
                 paymentmethod: d.paymentmethod.description,
                 amount: +d.amount,
                 status: d.status,
+                user: d.user?.name,
             }
         });
         formatdata.forEach(function (d, i) {
